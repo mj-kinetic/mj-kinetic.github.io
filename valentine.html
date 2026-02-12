@@ -14,9 +14,9 @@
         }
         .float-animation { animation: heart-float 3s ease-in-out infinite; }
         
-        /* ปรับความเร็วตรงนี้: เปลี่ยนจาก 0.4s เป็น 0.8s เพื่อให้วิ่งช้าลงและ Smooth ขึ้น */
+        /* การตั้งค่าปุ่ม NO: ปรับ transition ให้ยาวขึ้นเป็น 1s เพื่อความ Slow และ Smooth */
         .smooth-move { 
-            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); 
+            transition: all 1.0s cubic-bezier(0.19, 1, 0.22, 1); 
         }
     </style>
 </head>
@@ -30,10 +30,10 @@
 
         <div id="decoder-section" class="space-y-6">
             <h1 class="text-3xl font-black tracking-tight text-rose-600 uppercase">Sweet Decoder</h1>
-            <p class="text-sm text-pink-400 font-medium italic">Enter Code 1402 to Unlock Secrets</p>
+            <p class="text-sm text-pink-400 font-medium italic">Enter Code 1402 to Unlock Heart</p>
             <input type="text" id="passcode" placeholder="----" maxlength="4" class="bg-pink-50 border-2 border-pink-100 rounded-2xl px-6 py-4 text-center text-rose-500 text-2xl font-bold tracking-[0.5em] focus:outline-none focus:border-rose-300 w-48 mb-4 block mx-auto shadow-inner">
-            <button onclick="checkCode()" class="block mx-auto text-sm font-bold bg-rose-500 text-white px-10 py-4 rounded-full hover:bg-rose-600 transition-all uppercase tracking-widest shadow-lg shadow-rose-200">Unlock Heart</button>
-            <p id="error-msg" class="text-xs text-rose-400 font-bold hidden">รหัสไม่ถูกต้อง! (ลอง 1402 นะคะ)</p>
+            <button onclick="checkCode()" class="block mx-auto text-sm font-bold bg-rose-500 text-white px-10 py-4 rounded-full hover:bg-rose-600 transition-all uppercase tracking-widest shadow-lg shadow-rose-200">Start Project</button>
+            <p id="error-msg" class="text-xs text-rose-400 font-bold hidden">รหัสไม่ถูกต้อง! ลองดูรหัสวันที่ 14/02 นะคะ</p>
         </div>
 
         <div id="game-section" class="hidden space-y-8">
@@ -84,7 +84,7 @@
 
         function startNextQuestion() {
             if (currentStep < questions.length) {
-                document.getElementById('status-msg').innerText = `Step ${currentStep + 1} of 8: Loading...`;
+                document.getElementById('status-msg').innerText = `Logic Step ${currentStep + 1} of 8`;
                 document.getElementById('question-text').innerText = questions[currentStep].text;
                 document.getElementById('dynamic-icon').innerText = questions[currentStep].icon;
                 resetNoButton();
@@ -100,7 +100,9 @@
         }
 
         function handleYes() {
-            confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 }, colors: ['#fb7185', '#ffffff'] });
+            // พลุเล็กๆ ตอนเปลี่ยนข้อ
+            confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 }, colors: ['#fb7185', '#ffffff'] });
+            
             currentStep++;
             if (currentStep < questions.length) {
                 startNextQuestion();
@@ -109,11 +111,11 @@
             }
         }
 
-        // ปรับปรุง Logic ปุ่ม NO ให้หนีช้าลงแต่ลื่นไหล
+        // ปุ่ม NO วิ่งหนีแบบ Slow & Smooth
         const noBtn = document.getElementById('no-btn');
         noBtn.addEventListener('mouseover', () => {
             noBtn.style.position = "fixed";
-            const padding = 120;
+            const padding = 100;
             const newX = Math.random() * (window.innerWidth - padding * 2) + padding;
             const newY = Math.random() * (window.innerHeight - padding * 2) + padding;
             
@@ -122,41 +124,46 @@
             noBtn.style.transform = `translate(${newX}px, ${newY}px)`;
         });
 
+        // Grand Finale: พลุแบบจัดเต็ม 15 วินาที
         function showFinal() {
             document.getElementById('game-section').classList.add('hidden');
             document.getElementById('final-section').classList.remove('hidden');
             document.getElementById('dynamic-icon').innerText = '🥰';
 
-            // พลุชุดใหญ่ 15 วินาที
-            const end = Date.now() + (15 * 1000); 
+            const duration = 15 * 1000;
+            const animationEnd = Date.now() + duration;
             const colors = ['#e11d48', '#fb7185', '#ffffff', '#ff0000', '#ffd1dc'];
 
             (function frame() {
+                const timeLeft = animationEnd - Date.now();
+
+                // ยิงพลุจากมุมซ้ายและขวา
                 confetti({
-                    particleCount: 3,
+                    particleCount: 2,
                     angle: 60,
                     spread: 55,
                     origin: { x: 0, y: 0.8 },
                     colors: colors
                 });
                 confetti({
-                    particleCount: 3,
+                    particleCount: 2,
                     angle: 120,
                     spread: 55,
                     origin: { x: 1, y: 0.8 },
                     colors: colors
                 });
-                
+
+                // ยิงสุ่มตรงกลาง
                 if (Math.random() > 0.7) {
                     confetti({
                         particleCount: 1,
                         origin: { x: Math.random(), y: Math.random() - 0.2 },
-                        colors: ['#ff69b4', '#ff0000'],
+                        colors: colors,
                         scalar: 1.2
                     });
                 }
 
-                if (Date.now() < end) {
+                if (timeLeft > 0) {
                     requestAnimationFrame(frame);
                 }
             }());
