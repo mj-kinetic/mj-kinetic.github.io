@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MJ-Lab | The Cinematic Memory</title>
+    <title>MJ-Lab | The Minimal Modern Memory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&family=Cherry+Bomb+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Cherry+Bomb+One&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -16,15 +16,20 @@
         body { 
             background-color: var(--bg-soft); 
             overflow: hidden; 
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             transition: background-color 1.5s ease;
         }
         h1, h2, .font-playful { font-family: 'Cherry Bomb One', cursive; }
         
-        /* Modern Typography สำหรับคำถามและปุ่ม */
-        .modern-text { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
+        /* Modern Thin Typography */
+        .modern-thin { 
+            font-family: 'Inter', sans-serif; 
+            font-weight: 300; 
+            letter-spacing: 0.05em; 
+            text-transform: uppercase;
+        }
 
-        /* Smooth Section Transitions */
+        /* Section Transitions */
         .section-enter {
             animation: sectionIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
@@ -32,100 +37,101 @@
             animation: sectionOut 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         @keyframes sectionIn {
-            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
         @keyframes sectionOut {
             from { opacity: 1; transform: scale(1); }
-            to { opacity: 0; transform: scale(1.1) translateY(-20px); }
+            to { opacity: 0; transform: scale(1.05) translateY(-10px); }
         }
 
-        /* Stacked Photos Logic */
+        /* Photo Stacks */
         .photo-stack { position: relative; width: 280px; height: 350px; margin: 0 auto; perspective: 1000px; }
         .stacked-photo {
             position: absolute; width: 100%; height: 100%;
             background: white; padding: 12px 12px 45px 12px;
-            box-shadow: 0 15px 35px rgba(244, 63, 94, 0.15);
-            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
             cursor: pointer; 
             transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
             user-select: none;
         }
-        .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
-        .photo-out { transform: translate(200%, -50%) rotate(45deg) scale(0.5) !important; opacity: 0; pointer-events: none; }
+        .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+        .photo-out { transform: translate(150%, -40%) rotate(30deg) scale(0.6) !important; opacity: 0; pointer-events: none; }
 
-        /* Smooth Move for NO button - ปรับ Transition ให้ยาวขึ้น */
+        /* Smooth Slow Move for NO button */
         .smooth-move { 
-            transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1); 
+            transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1); 
         }
 
+        /* Floating Hearts Decor */
         .floating-heart {
-            position: absolute; pointer-events: none; animation: floatUp 6s linear infinite; opacity: 0.4;
+            position: absolute; pointer-events: none; animation: floatUp 7s linear infinite; opacity: 0.3;
         }
         @keyframes floatUp {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            50% { opacity: 0.5; }
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            50% { opacity: 0.4; }
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
         
         .hidden-section { display: none; }
     </style>
 </head>
-<body class="text-slate-800 flex items-center justify-center min-h-screen p-4 overflow-hidden">
+<body class="text-slate-700 flex items-center justify-center min-h-screen p-4 overflow-hidden">
 
     <div id="decor-container"></div>
 
-    <div id="main-container" class="bg-white/90 backdrop-blur-md border border-white p-8 md:p-12 rounded-[3.5rem] shadow-[0_30px_60px_-15px_rgba(244,63,94,0.3)] max-w-lg w-full text-center relative z-50">
+    <div id="main-container" class="bg-white/80 backdrop-blur-lg border border-white/50 p-10 md:p-14 rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] max-w-lg w-full text-center relative z-50">
         
-        <div id="display-icon" class="text-6xl mb-6 scale-110">🎁</div>
+        <div id="display-icon" class="text-5xl mb-8 opacity-80">🎁</div>
 
         <div id="section-decoder" class="section-enter">
-            <h1 class="text-4xl text-rose-500 mb-2">Secret Lab</h1>
-            <p class="text-slate-400 text-xs mb-8 tracking-[0.3em] uppercase font-bold modern-text">Accessing Memories</p>
-            <input type="text" id="passcode" placeholder="CODE" maxlength="4" class="bg-rose-50 border-none rounded-2xl px-6 py-4 text-center text-rose-500 text-3xl font-black tracking-[0.5em] focus:ring-4 focus:ring-rose-100 w-full mb-6 transition-all shadow-inner modern-text">
-            <button onclick="checkCode()" class="w-full bg-rose-500 text-white py-4 rounded-2xl font-extrabold hover:bg-rose-600 transition-all shadow-lg uppercase tracking-widest active:scale-95 modern-text">Open Vault</button>
+            <h1 class="text-3xl text-rose-500 mb-2">Secret Lab</h1>
+            <p class="modern-thin text-[10px] mb-10 text-slate-400">Memory Authentication Required</p>
+            <input type="text" id="passcode" placeholder="----" maxlength="4" class="bg-slate-50 border-none rounded-xl px-4 py-4 text-center text-rose-500 text-3xl font-light tracking-[0.6em] focus:ring-1 focus:ring-rose-200 w-full mb-8 transition-all modern-thin">
+            <button onclick="checkCode()" class="w-full bg-rose-500 text-white py-4 rounded-xl font-light hover:bg-rose-600 transition-all uppercase tracking-[0.2em] active:scale-95 modern-thin text-xs">Unlock</button>
         </div>
 
         <div id="section-questions" class="hidden-section">
-            <p id="status-msg" class="text-[10px] text-rose-400 font-extrabold uppercase tracking-[0.4em] mb-4 modern-text"></p>
-            <h2 id="question-text" class="text-2xl font-bold text-slate-700 min-h-[5rem] flex items-center justify-center px-4"></h2>
+            <p id="status-msg" class="modern-thin text-[9px] text-rose-400 mb-6"></p>
+            <h2 id="question-text" class="text-xl font-bold text-slate-600 min-h-[5rem] flex items-center justify-center px-6 leading-relaxed"></h2>
             
-            <div id="btn-container" class="flex flex-col items-center gap-4 mt-8 relative min-h-[160px]">
-                <button onclick="handleYes()" class="bg-rose-500 text-white px-20 py-4 rounded-full text-xl font-extrabold shadow-xl shadow-rose-200 transition-all hover:scale-105 active:scale-95 modern-text">YES</button>
-                <button id="no-btn" class="bg-slate-100 text-slate-400 px-14 py-3 rounded-full text-lg font-bold smooth-move modern-text">NO</button>
+            <div id="btn-container" class="flex flex-col items-center gap-5 mt-10 relative min-h-[180px]">
+                <button onclick="handleYes()" class="bg-rose-500 text-white px-20 py-3.5 rounded-full text-sm font-light shadow-lg shadow-rose-100 transition-all hover:bg-rose-600 active:scale-95 modern-thin">Yes</button>
+                <button id="no-btn" class="bg-white border border-slate-100 text-slate-300 px-14 py-2.5 rounded-full text-sm font-light smooth-move modern-thin">No</button>
             </div>
         </div>
 
         <div id="section-random" class="hidden-section">
-            <h2 class="text-3xl text-rose-500 mb-2">Random Moments</h2>
-            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-8 modern-text">Click photos to slide away</p>
+            <h2 class="text-2xl text-rose-500 mb-2">Random Moments</h2>
+            <p class="modern-thin text-[9px] text-slate-400 mb-10">Archive Set 01 / 02</p>
             <div id="stack-random" class="photo-stack"></div>
             <div class="h-12"></div>
         </div>
 
         <div id="section-food" class="hidden-section">
-            <h2 class="text-3xl text-rose-500 mb-2">Delicious Logic</h2>
-            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-8 modern-text">Our taste of happiness</p>
+            <h2 class="text-2xl text-rose-500 mb-2">Delicious Logic</h2>
+            <p class="modern-thin text-[9px] text-slate-400 mb-10">Archive Set 02 / 02</p>
             <div id="stack-food" class="photo-stack"></div>
             <div class="h-12"></div>
         </div>
 
         <div id="section-card" class="hidden-section">
-            <div class="p-1 text-rose-500 text-2xl mb-4">✨ 🌸 ✨</div>
-            <h3 class="text-4xl text-rose-600 mb-6">For You</h3>
-            <div class="space-y-4 text-slate-600 leading-relaxed text-lg font-medium italic">
-                <p>"ขอบคุณที่เป็นเรื่องราวดีๆ ในทุกวัน"</p>
+            <div class="p-1 text-rose-300 text-xl mb-6">✦ ✦ ✦</div>
+            <h3 class="text-3xl text-rose-500 mb-8 font-light">Heart-to-Heart</h3>
+            <div class="space-y-5 text-slate-500 leading-relaxed text-md font-light italic">
+                <p>"ขอบคุณที่อยู่เคียงข้างกันในทุกความหมาย"</p>
                 <p>"รักที่สุดในลอจิกของหัวใจเลยนะคะ"</p>
             </div>
-            <div class="mt-10">
-                <button onclick="finalize()" class="bg-rose-500 text-white px-12 py-4 rounded-full font-bold shadow-xl animate-pulse modern-text">Celebrate! ❤️</button>
+            <div class="mt-12">
+                <button onclick="finalize()" class="bg-rose-500 text-white px-12 py-3.5 rounded-full text-xs font-light shadow-xl animate-pulse modern-thin">Celebrate</button>
             </div>
         </div>
 
         <div id="section-finale" class="hidden-section">
-            <h1 class="text-5xl text-rose-600 mb-4 drop-shadow-sm">HAPPY VALENTINE!</h1>
-            <p class="text-rose-400 font-extrabold tracking-[0.5em] text-xs modern-text uppercase">Forever with you</p>
-            <div class="text-8xl mt-12">🥰</div>
+            <h1 class="text-4xl text-rose-600 mb-3 tracking-tighter">HAPPY VALENTINE!</h1>
+            <p class="modern-thin text-[9px] text-rose-300 tracking-[0.6em]">Forever in Sync</p>
+            <div class="text-7xl mt-14 opacity-90">🥰</div>
         </div>
 
     </div>
@@ -145,14 +151,14 @@
 
         function createHearts() {
             const container = document.getElementById('decor-container');
-            const emojis = ['❤️', '💖', '🌸', '✨'];
-            for(let i=0; i<15; i++) {
+            const emojis = ['❤️', '🌸', '✨'];
+            for(let i=0; i<12; i++) {
                 const heart = document.createElement('div');
                 heart.className = 'floating-heart';
                 heart.innerText = emojis[Math.floor(Math.random()*emojis.length)];
                 heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
-                heart.style.animationDelay = (Math.random() * 5) + 's';
+                heart.style.fontSize = (Math.random() * 15 + 10) + 'px';
+                heart.style.animationDelay = (Math.random() * 6) + 's';
                 container.appendChild(heart);
             }
         }
@@ -177,23 +183,23 @@
                 transition('section-decoder', 'section-questions');
                 document.getElementById('display-icon').innerText = '💌';
                 updateQuestion();
-            } else { alert("Code is 1402! 🌸"); }
+            } else { alert("Authentication Failed. Try 1402."); }
         }
 
         function updateQuestion() {
             if (currentStep < questions.length) {
-                document.getElementById('status-msg').innerText = `STEP ${currentStep + 1} / 8`;
+                document.getElementById('status-msg').innerText = `PHASE 02 // SEQUENCE ${currentStep + 1}`;
                 document.getElementById('question-text').innerText = questions[currentStep];
                 resetNoBtn();
             } else {
-                transition('section-questions', 'section-random', '#fff7ed');
+                transition('section-questions', 'section-random', '#fafaf9');
                 document.getElementById('display-icon').innerText = '📸';
                 generateStack('random', 10);
             }
         }
 
         function handleYes() {
-            confetti({ particleCount: 40, spread: 70, origin: { y: 0.7 }, colors: ['#f43f5e'] });
+            confetti({ particleCount: 30, spread: 60, origin: { y: 0.7 }, colors: ['#f43f5e', '#ffffff'] });
             currentStep++; 
             updateQuestion();
         }
@@ -204,13 +210,15 @@
             noBtn.style.transform = "none";
         }
 
-        // Logic ปุ่ม NO: วิ่งหนีแบบ Smooth และจำกัดระยะการวิ่ง
+        // NO Button Logic: Slow movement limited to the center container area
         document.getElementById('no-btn').addEventListener('mouseover', function() {
             this.style.position = "fixed";
-            // จำกัดระยะห่างจากกึ่งกลาง (วิ่งไม่ไกลเกินไป)
-            const range = 200; 
-            const x = (Math.random() * range * 2) - range + (window.innerWidth / 2 - 75);
-            const y = (Math.random() * range * 2) - range + (window.innerHeight / 2 - 25);
+            const container = document.getElementById('main-container').getBoundingClientRect();
+            
+            // จำกัดให้อยู่แค่รอบๆ กล่องตรงกลาง (Padding 50px)
+            const margin = 50;
+            const x = (Math.random() * (container.width + margin * 2)) + container.left - margin;
+            const y = (Math.random() * (container.height + margin * 2)) + container.top - margin;
             
             this.style.left = '0px'; 
             this.style.top = '0px';
@@ -223,9 +231,9 @@
             for(let i = 0; i < count; i++) {
                 const div = document.createElement('div');
                 div.className = 'stacked-photo';
-                div.style.transform = `rotate(${(Math.random() - 0.5) * 20}deg) translateY(${i*-2}px)`;
+                div.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg) translateY(${i*-1}px)`;
                 div.style.zIndex = count - i;
-                div.innerHTML = `<img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/300x400/f43f5e/ffffff?text=${type}+${i+1}'">`;
+                div.innerHTML = `<img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/300x400/f8fafc/f43f5e?text=${type}+${i+1}'">`;
                 
                 div.onclick = function() {
                     this.classList.add('photo-out');
@@ -233,11 +241,11 @@
                     if(remaining === 0) {
                         setTimeout(() => {
                             if(type === 'random') {
-                                transition('section-random', 'section-food', '#f0fdf4');
+                                transition('section-random', 'section-food', '#f8fafc');
                                 document.getElementById('display-icon').innerText = '🍱';
                                 generateStack('food', 10);
                             } else {
-                                transition('section-food', 'section-card', '#fdf2f8');
+                                transition('section-food', 'section-card', '#fff1f2');
                                 document.getElementById('display-icon').innerText = '💌';
                             }
                         }, 800);
@@ -252,8 +260,8 @@
             document.getElementById('display-icon').innerText = '🎈';
             const end = Date.now() + 15000;
             (function frame() {
-                confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: ['#f43f5e', '#fb7185', '#ffffff'] });
-                confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.8 }, colors: ['#f43f5e', '#fb7185', '#ffffff'] });
+                confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: ['#f43f5e', '#ffffff'] });
+                confetti({ particleCount: 2, angle: 120, spread: 55, origin: { x: 1, y: 0.8 }, colors: ['#f43f5e', '#ffffff'] });
                 if (Date.now() < end) requestAnimationFrame(frame);
             }());
         }
