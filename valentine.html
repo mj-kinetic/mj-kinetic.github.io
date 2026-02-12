@@ -3,71 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MJ-Lab | Valentine Sweet Decoder</title>
+    <title>MJ-Lab | Ultimate Valentine Decoder</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body { background-color: #fff1f2; } /* สีชมพูอ่อนมากขาวๆ */
-        .card-red-glow { shadow-color: rgba(225, 29, 72, 0.2); }
+        body { background-color: #fff1f2; }
         @keyframes heart-float {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0); }
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
         }
         .float-animation { animation: heart-float 3s ease-in-out infinite; }
+        .smooth-move { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
 <body class="text-slate-800 flex items-center justify-center min-h-screen p-4 overflow-hidden">
 
-    <div id="main-card" class="bg-white border-4 border-pink-200 p-12 rounded-[3rem] shadow-2xl max-w-lg w-full text-center transition-all duration-500 relative">
+    <div id="main-card" class="bg-white border-4 border-pink-200 p-10 md:p-14 rounded-[3.5rem] shadow-2xl max-w-lg w-full text-center transition-all duration-500 relative z-10">
         
         <div id="icon-box" class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-pink-50 mb-8 float-animation">
-            <div id="dynamic-icon" class="text-5-xl">
+            <div id="dynamic-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3m-3-3l-2.25-2.25"/></svg>
             </div>
         </div>
 
         <div id="decoder-section" class="space-y-6">
             <h1 class="text-3xl font-black tracking-tight text-rose-600 uppercase">Sweet Decoder</h1>
-            <p class="text-sm text-pink-400 font-medium italic">กรุณาใส่รหัสลับเพื่อเริ่มต้นการถอดรหัสความรัก</p>
+            <p class="text-sm text-pink-400 font-medium italic">Enter Secret Code to Start</p>
             <input type="text" id="passcode" placeholder="----" maxlength="4" class="bg-pink-50 border-2 border-pink-100 rounded-2xl px-6 py-4 text-center text-rose-500 text-2xl font-bold tracking-[0.5em] focus:outline-none focus:border-rose-300 w-48 mb-4 block mx-auto shadow-inner">
-            <button onclick="checkCode()" class="block mx-auto text-sm font-bold bg-rose-500 text-white px-10 py-4 rounded-full hover:bg-rose-600 hover:scale-105 transition-all uppercase tracking-widest shadow-lg shadow-rose-200">Unlock Heart</button>
-            <p id="error-msg" class="text-xs text-rose-400 font-bold hidden">รหัสไม่ถูกต้อง! ลองใหม่นะคะ (คำใบ้: วันที่ 14 ก.พ.)</p>
+            <button onclick="checkCode()" class="block mx-auto text-sm font-bold bg-rose-500 text-white px-10 py-4 rounded-full hover:bg-rose-600 transition-all uppercase tracking-widest shadow-lg shadow-rose-200">Unlock Heart</button>
+            <p id="error-msg" class="text-xs text-rose-400 font-bold hidden">รหัสไม่ถูกต้อง! ลองดูที่วันที่ 1402 นะคะ</p>
         </div>
 
         <div id="game-section" class="hidden space-y-8">
-            <p id="status-msg" class="text-xs text-pink-500 font-bold uppercase tracking-widest"></p>
-            <h2 id="question-text" class="text-2xl font-bold text-slate-700 min-h-[4rem] px-4"></h2>
+            <p id="status-msg" class="text-[10px] text-pink-500 font-bold uppercase tracking-[0.2em]"></p>
+            <h2 id="question-text" class="text-2xl font-bold text-slate-700 min-h-[4rem] px-2 flex items-center justify-center leading-tight"></h2>
             
-            <div id="btn-container" class="flex justify-center items-center gap-6 relative h-32">
-                <button onclick="handleYes()" class="bg-rose-500 hover:bg-rose-600 text-white px-12 py-3 rounded-full text-lg font-bold shadow-xl shadow-rose-200 transition-all z-10 active:scale-95">YES</button>
-                <button id="no-btn" class="bg-white border-2 border-pink-100 text-pink-300 px-10 py-3 rounded-full text-lg font-medium absolute transition-all duration-75">NO</button>
+            <div id="btn-container" class="flex flex-col items-center gap-4 relative min-h-[180px]">
+                <button onclick="handleYes()" class="bg-rose-500 hover:bg-rose-600 text-white px-16 py-3 rounded-full text-lg font-bold shadow-xl shadow-rose-200 transition-all z-20 active:scale-95">YES</button>
+                <button id="no-btn" class="bg-white border-2 border-pink-100 text-pink-300 px-12 py-3 rounded-full text-lg font-medium smooth-move z-10">NO</button>
             </div>
         </div>
 
         <div id="final-section" class="hidden space-y-6">
-            <div class="text-6xl mb-4">🎉</div>
+            <div class="text-6xl mb-4">💐</div>
             <h1 class="text-4xl font-black text-rose-600 tracking-tight leading-tight">Happy Valentine's Day!</h1>
-            <p class="text-pink-500 font-medium italic">ภารกิจสำเร็จ! คุณคือคนพิเศษของ MJ-Lab</p>
-            <div class="p-6 bg-pink-50 rounded-3xl text-3xl">💝💖✨🌷</div>
-            <p class="text-[10px] text-pink-300 uppercase tracking-[0.3em]">Decoding Love Project Completed</p>
+            <div class="p-6 bg-pink-50 rounded-3xl">
+                <p class="text-rose-500 font-bold text-lg mb-2">You've unlocked my heart!</p>
+                <p class="text-pink-400 italic text-sm">Mission Completed: All Logic Decoded</p>
+            </div>
+            <div class="text-4xl">🌷💖🎀🌼💖🌷</div>
         </div>
-
     </div>
 
     <script>
         const questions = [
-            { text: "พร้อมจะเข้าสู่บททดสอบความหวานหรือยังคะ?", icon: "🎁" },
-            { text: "ถ้าตอบ Yes หมดทุกข้อ จะมีรางวัลให้นะ ยอมรับไหม?", icon: "🍯" },
-            { text: "Lab นี้คนทำตั้งใจทำมากเลยนะ น่ารักใช่ไหมล่ะ?", icon: "🌸" },
-            { text: "งั้นคำถามสุดท้าย... Will you be my Valentine?", icon: "💌" }
+            { text: "พร้อมจะเริ่มการทดสอบระดับความหวานหรือยังคะ?", icon: "🚀" },
+            { text: "คุณสัญญาว่าจะตอบแบบใช้หัวใจ (ไม่ใช่ Logic) ไหม?", icon: "🍭" },
+            { text: "คุณชอบ Lab ที่ MJ ตั้งใจสร้างขึ้นมานี้หรือเปล่า?", icon: "✨" },
+            { text: "ถ้ามีรางวัลรออยู่ตอนจบ จะตื่นเต้นไหมนะ?", icon: "🎁" },
+            { text: "คุณคิดว่าเราควรจะฉลองวันนี้ด้วยกันใช่ไหม?", icon: "🎈" },
+            { text: "คุณเตรียมใจรับความเซอร์ไพรส์หรือยัง?", icon: "🧸" },
+            { text: "ใกล้ถึงข้อสุดท้ายแล้ว... ตื่นเต้นไหมคะ?", icon: "🍬" },
+            { text: "คำถามที่สำคัญที่สุด... Will you be my Valentine?", icon: "💌" }
         ];
         
         let currentStep = 0;
 
         function checkCode() {
-            const code = document.getElementById('passcode').value;
-            if (code === '1402') {
+            if (document.getElementById('passcode').value === '1402') {
                 document.getElementById('decoder-section').classList.add('hidden');
                 document.getElementById('game-section').classList.remove('hidden');
                 startNextQuestion();
@@ -79,62 +82,73 @@
 
         function startNextQuestion() {
             if (currentStep < questions.length) {
-                document.getElementById('status-msg').innerText = "SYSTEM: Processing Sweet Logic...";
+                document.getElementById('status-msg').innerText = `Step ${currentStep + 1} of 8: Decoding Logic...`;
                 document.getElementById('question-text').innerText = questions[currentStep].text;
                 document.getElementById('dynamic-icon').innerHTML = `<span class="text-5xl">${questions[currentStep].icon}</span>`;
-                
-                // Reset NO button position
-                const noBtn = document.getElementById('no-btn');
-                noBtn.style.transform = `translate(100px, 0px)`;
+                resetNoButton();
             } else {
                 showFinal();
             }
         }
 
+        function resetNoButton() {
+            const noBtn = document.getElementById('no-btn');
+            noBtn.style.position = "static";
+            noBtn.style.transform = "translate(0, 0)";
+        }
+
         function handleYes() {
-            // Celebrate เล็กๆ ระหว่างทาง
-            confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 }, colors: ['#fb7185', '#ffffff', '#ffe4e6'] });
-            
+            confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 }, colors: ['#fb7185', '#ffffff'] });
             currentStep++;
             if (currentStep < questions.length) {
-                document.getElementById('main-card').classList.add('scale-105');
-                setTimeout(() => document.getElementById('main-card').classList.remove('scale-105'), 200);
                 startNextQuestion();
             } else {
                 showFinal();
             }
         }
 
+        // Logic ปุ่ม NO วิ่งหนีแบบ Smooth และกว้างๆ
+        const noBtn = document.getElementById('no-btn');
+        noBtn.addEventListener('mouseover', () => {
+            noBtn.style.position = "fixed";
+            // สุ่มตำแหน่งกว้างๆ ทั่วหน้าจอ
+            const padding = 100;
+            const newX = Math.random() * (window.innerWidth - padding * 2) + padding;
+            const newY = Math.random() * (window.innerHeight - padding * 2) + padding;
+            
+            noBtn.style.left = '0px';
+            noBtn.style.top = '0px';
+            noBtn.style.transform = `translate(${newX}px, ${newY}px)`;
+        });
+
         function showFinal() {
             document.getElementById('game-section').classList.add('hidden');
             document.getElementById('final-section').classList.remove('hidden');
             document.getElementById('dynamic-icon').innerHTML = '<span class="text-6xl">🥰</span>';
             
-            // Grand Finale: ลูกเล่นจัดเต็มขึ้น นานขึ้น
-            const end = Date.now() + (7 * 1000); // 7 วินาที
+            // Grand Finale: เซอร์ไพรส์แบบจัดเต็ม 10 วินาที
+            const end = Date.now() + (10 * 1000);
+            const colors = ['#e11d48', '#fb7185', '#ffffff', '#ff0000', '#ffd1dc'];
 
             (function frame() {
-                // พ่นจากซ้าย
-                confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#e11d48', '#ffffff', '#fb7185'] });
-                // พ่นจากขวา
-                confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#e11d48', '#ffffff', '#fb7185'] });
-                // สุ่มหัวใจตรงกลาง
-                if (Math.random() > 0.8) {
-                    confetti({ particleCount: 1, origin: { x: Math.random(), y: Math.random() - 0.2 }, shapes: ['circle'], colors: ['#ff0000'] });
+                // พลุจากมุมซ้ายและขวา
+                confetti({ particleCount: 4, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: colors });
+                confetti({ particleCount: 4, angle: 120, spread: 55, origin: { x: 1, y: 0.8 }, colors: colors });
+
+                // เพิ่มหัวใจ ดอกไม้ ริบบิ้น (จำลองด้วยรูปทรงและสีที่หลากหลาย)
+                if (Math.random() > 0.7) {
+                    confetti({
+                        particleCount: 2,
+                        origin: { x: Math.random(), y: Math.random() - 0.2 },
+                        shapes: ['circle', 'square'], // ริบบิ้นและดอกไม้จำลอง
+                        colors: ['#ff0000', '#ff69b4', '#ffffff', '#ffc0cb'],
+                        scalar: Math.random() * 1.5 + 0.5
+                    });
                 }
 
                 if (Date.now() < end) requestAnimationFrame(frame);
             }());
         }
-
-        // NO Button Logic: หนีไวขึ้น (ลด duration เหลือ 75ms)
-        const noBtn = document.getElementById('no-btn');
-        noBtn.addEventListener('mouseover', () => {
-            // คำนวณให้หนีไกลขึ้นและเร็วขึ้น
-            const x = (Math.random() - 0.5) * 500;
-            const y = (Math.random() - 0.5) * 500;
-            noBtn.style.transform = `translate(${x}px, ${y}px)`;
-        });
     </script>
 </body>
 </html>
