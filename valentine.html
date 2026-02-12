@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MJ-Lab | Valentine Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .decoding-text::after { content: '|'; animation: pulse-soft 0.8s infinite; }
+        .celebrate-pop { animation: pop 0.4s ease-out; }
+        @keyframes pop { 0% { transform: scale(0.8); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 flex items-center justify-center min-h-screen p-6 overflow-hidden">
+
+    <div id="main-card" class="bg-[#1e293b] border border-slate-800 p-10 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center transition-all duration-500">
+        
+        <div id="icon-box" class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#33253b]/50 mb-6">
+            <svg id="main-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-pink-400">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+                <path d="m14.5 9-5 5"/><path d="m9.5 9 5 5"/>
+            </svg>
+        </div>
+
+        <div id="decoder-section" class="space-y-4">
+            <h1 class="text-xl font-light tracking-[0.2em] mb-4 text-white uppercase">Security Override</h1>
+            <p class="text-[12px] text-slate-400 tracking-widest uppercase mb-4">Enter Access Code</p>
+            <input type="text" id="passcode" placeholder="----" maxlength="4" class="bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-center text-pink-500 tracking-[1em] focus:outline-none focus:border-pink-500 w-32 mb-4 block mx-auto">
+            <button onclick="checkCode()" class="block mx-auto text-[10px] font-bold text-pink-500 border border-pink-500/30 px-6 py-2 rounded-full hover:bg-pink-500/10 transition-all uppercase tracking-widest">Execute</button>
+            <p id="error-msg" class="text-[10px] text-red-400 hidden">Access Denied: Incorrect Logic</p>
+        </div>
+
+        <div id="game-section" class="hidden space-y-6">
+            <p id="status-msg" class="text-[11px] text-pink-400 font-mono h-4"></p>
+            <h2 id="question-text" class="text-xl font-light text-white min-h-[3rem] flex items-center justify-center"></h2>
+            
+            <div id="btn-container" class="flex justify-center items-center gap-4 relative h-24">
+                <button onclick="handleYes()" class="bg-pink-500 hover:bg-pink-600 text-white px-8 py-2 rounded-full text-sm font-bold shadow-lg shadow-pink-500/20 transition-all z-10">YES</button>
+                <button id="no-btn" class="bg-slate-700 text-slate-300 px-8 py-2 rounded-full text-sm font-light absolute transition-all duration-100">NO</button>
+            </div>
+        </div>
+
+        <div id="final-section" class="hidden space-y-4">
+            <h1 class="text-3xl font-bold text-pink-500 tracking-tighter">Happy Valentine's Day!</h1>
+            <p class="text-slate-400 font-light tracking-widest text-xs uppercase">Project Completed Successfully</p>
+            <div class="pt-4 text-2xl">💖✨🌱</div>
+        </div>
+
+    </div>
+
+    <script>
+        const questions = [
+            "คุณพร้อมที่จะเข้าสู่ระบบการทดสอบหรือยัง?",
+            "คุณสัญญาไหมว่าจะตอบความจริงทุกข้อ?",
+            "คุณคิดว่า Lab นี้ออกแบบมาได้น่ารักใช่ไหม?",
+            "คำถามสุดท้าย... Will you be my Valentine?"
+        ];
+        
+        let currentStep = 0;
+
+        function checkCode() {
+            const code = document.getElementById('passcode').value;
+            if (code === '1402') {
+                document.getElementById('decoder-section').classList.add('hidden');
+                document.getElementById('game-section').classList.remove('hidden');
+                startNextQuestion();
+            } else {
+                document.getElementById('error-msg').classList.remove('hidden');
+                setTimeout(() => document.getElementById('error-msg').classList.add('hidden'), 2000);
+            }
+        }
+
+        function startNextQuestion() {
+            if (currentStep < questions.length) {
+                document.getElementById('status-msg').innerText = "SYSTEM: Processing next logic...";
+                document.getElementById('question-text').innerText = questions[currentStep];
+                // Reset NO button position
+                const noBtn = document.getElementById('no-btn');
+                noBtn.style.transform = `translate(80px, 0px)`;
+            } else {
+                showFinal();
+            }
+        }
+
+        function handleYes() {
+            // Celebrate เล็กน้อย (Confetti เบาๆ)
+            confetti({ particleCount: 40, spread: 50, origin: { y: 0.6 }, colors: ['#f472b6'] });
+            
+            currentStep++;
+            if (currentStep < questions.length) {
+                const card = document.getElementById('main-card');
+                card.classList.add('celebrate-pop');
+                setTimeout(() => card.classList.remove('celebrate-pop'), 400);
+                startNextQuestion();
+            } else {
+                showFinal();
+            }
+        }
+
+        function showFinal() {
+            document.getElementById('game-section').classList.add('hidden');
+            document.getElementById('final-section').classList.remove('hidden');
+            document.getElementById('main-icon').innerHTML = '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" stroke="none"/>';
+            
+            // Full Celebration (พลุเต็มหน้าจอ)
+            const duration = 3 * 1000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#f472b6', '#ffffff'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#f472b6', '#ffffff'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+
+        // Runaway NO button logic
+        const noBtn = document.getElementById('no-btn');
+        noBtn.addEventListener('mouseover', () => {
+            const x = (Math.random() - 0.5) * 300;
+            const y = (Math.random() - 0.5) * 300;
+            noBtn.style.transform = `translate(${x}px, ${y}px)`;
+        });
+    </script>
+</body>
+</html>
