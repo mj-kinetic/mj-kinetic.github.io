@@ -3,22 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MJ-Lab | Ultimate Valentine Decoder</title>
+    <title>MJ-Lab | Valentine Love Rain</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body { background-color: #fff1f2; }
+        body { 
+            background-color: #fff1f2; 
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* ป้องกันแถบ Scrollbar ขึ้นขณะฝนตก */
+        }
         @keyframes heart-float {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-15px) rotate(5deg); }
         }
         .float-animation { animation: heart-float 3s ease-in-out infinite; }
         .smooth-move { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        /* สไตล์สำหรับฝนความรักที่ตกลงมา */
+        .love-drop {
+            position: fixed;
+            z-index: 40;
+            pointer-events: none;
+            user-select: none;
+            will-change: transform;
+        }
     </style>
 </head>
-<body class="text-slate-800 flex items-center justify-center min-h-screen p-4 overflow-hidden">
+<body class="text-slate-800 flex items-center justify-center min-h-screen p-4">
 
-    <div id="main-card" class="bg-white border-4 border-pink-200 p-10 md:p-14 rounded-[3.5rem] shadow-2xl max-w-lg w-full text-center transition-all duration-500 relative z-10">
+    <div id="main-card" class="bg-white/90 backdrop-blur-sm border-4 border-pink-200 p-10 md:p-14 rounded-[3.5rem] shadow-2xl max-w-lg w-full text-center transition-all duration-500 relative z-50">
         
         <div id="icon-box" class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-pink-50 mb-8 float-animation">
             <div id="dynamic-icon">
@@ -28,10 +41,10 @@
 
         <div id="decoder-section" class="space-y-6">
             <h1 class="text-3xl font-black tracking-tight text-rose-600 uppercase">Sweet Decoder</h1>
-            <p class="text-sm text-pink-400 font-medium italic">Enter Secret Code to Start</p>
+            <p class="text-sm text-pink-400 font-medium italic">Enter Code 1402 to Access</p>
             <input type="text" id="passcode" placeholder="----" maxlength="4" class="bg-pink-50 border-2 border-pink-100 rounded-2xl px-6 py-4 text-center text-rose-500 text-2xl font-bold tracking-[0.5em] focus:outline-none focus:border-rose-300 w-48 mb-4 block mx-auto shadow-inner">
             <button onclick="checkCode()" class="block mx-auto text-sm font-bold bg-rose-500 text-white px-10 py-4 rounded-full hover:bg-rose-600 transition-all uppercase tracking-widest shadow-lg shadow-rose-200">Unlock Heart</button>
-            <p id="error-msg" class="text-xs text-rose-400 font-bold hidden">รหัสไม่ถูกต้อง! ลองดูที่วันที่ 1402 นะคะ</p>
+            <p id="error-msg" class="text-xs text-rose-400 font-bold hidden">รหัสไม่ถูกต้อง! ลองใหม่นะคะ</p>
         </div>
 
         <div id="game-section" class="hidden space-y-8">
@@ -48,12 +61,14 @@
             <div class="text-6xl mb-4">💐</div>
             <h1 class="text-4xl font-black text-rose-600 tracking-tight leading-tight">Happy Valentine's Day!</h1>
             <div class="p-6 bg-pink-50 rounded-3xl">
-                <p class="text-rose-500 font-bold text-lg mb-2">You've unlocked my heart!</p>
-                <p class="text-pink-400 italic text-sm">Mission Completed: All Logic Decoded</p>
+                <p class="text-rose-500 font-bold text-lg mb-2">My Lab is Yours Now!</p>
+                <p class="text-pink-400 italic text-sm">Every logic is filled with love.</p>
             </div>
-            <div class="text-4xl">🌷💖🎀🌼💖🌷</div>
+            <div class="text-4xl">🌷💖🌹✨🌸</div>
         </div>
     </div>
+
+    <div id="pile-container" class="fixed bottom-0 left-0 w-full h-full pointer-events-none z-30"></div>
 
     <script>
         const questions = [
@@ -98,7 +113,6 @@
         }
 
         function handleYes() {
-            confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 }, colors: ['#fb7185', '#ffffff'] });
             currentStep++;
             if (currentStep < questions.length) {
                 startNextQuestion();
@@ -107,47 +121,59 @@
             }
         }
 
-        // Logic ปุ่ม NO วิ่งหนีแบบ Smooth และกว้างๆ
+        // NO Button Logic
         const noBtn = document.getElementById('no-btn');
         noBtn.addEventListener('mouseover', () => {
             noBtn.style.position = "fixed";
-            // สุ่มตำแหน่งกว้างๆ ทั่วหน้าจอ
             const padding = 100;
             const newX = Math.random() * (window.innerWidth - padding * 2) + padding;
             const newY = Math.random() * (window.innerHeight - padding * 2) + padding;
-            
             noBtn.style.left = '0px';
             noBtn.style.top = '0px';
             noBtn.style.transform = `translate(${newX}px, ${newY}px)`;
         });
 
+        // Grand Finale: The Love Rain & Stacking
         function showFinal() {
             document.getElementById('game-section').classList.add('hidden');
             document.getElementById('final-section').classList.remove('hidden');
             document.getElementById('dynamic-icon').innerHTML = '<span class="text-6xl">🥰</span>';
-            
-            // Grand Finale: เซอร์ไพรส์แบบจัดเต็ม 10 วินาที
-            const end = Date.now() + (10 * 1000);
-            const colors = ['#e11d48', '#fb7185', '#ffffff', '#ff0000', '#ffd1dc'];
 
-            (function frame() {
-                // พลุจากมุมซ้ายและขวา
-                confetti({ particleCount: 4, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: colors });
-                confetti({ particleCount: 4, angle: 120, spread: 55, origin: { x: 1, y: 0.8 }, colors: colors });
+            const pileContainer = document.getElementById('pile-container');
+            const emojis = ['💖', '🌹', '🌸', '🌷', '✨', '🎀', '❤️', '💝'];
 
-                // เพิ่มหัวใจ ดอกไม้ ริบบิ้น (จำลองด้วยรูปทรงและสีที่หลากหลาย)
-                if (Math.random() > 0.7) {
-                    confetti({
-                        particleCount: 2,
-                        origin: { x: Math.random(), y: Math.random() - 0.2 },
-                        shapes: ['circle', 'square'], // ริบบิ้นและดอกไม้จำลอง
-                        colors: ['#ff0000', '#ff69b4', '#ffffff', '#ffc0cb'],
-                        scalar: Math.random() * 1.5 + 0.5
-                    });
-                }
+            function dropLove() {
+                const drop = document.createElement('div');
+                drop.className = 'love-drop';
+                drop.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                const startX = Math.random() * 100; // ตำแหน่งแนวนอน (vw)
+                const size = Math.random() * 20 + 20; // ขนาด (px)
+                const duration = Math.random() * 3 + 2; // ความเร็วในการตก (วินาที)
+                
+                drop.style.left = startX + 'vw';
+                drop.style.top = '-50px';
+                drop.style.fontSize = size + 'px';
+                drop.style.transition = `top ${duration}s linear, transform ${duration}s linear`;
+                
+                pileContainer.appendChild(drop);
 
-                if (Date.now() < end) requestAnimationFrame(frame);
-            }());
+                // เริ่มตกลงมา
+                setTimeout(() => {
+                    // ตกมาค้างที่ด้านล่างหน้าจอ (สุ่มความสูงที่ทับถมกัน 0-100px)
+                    const stackHeight = Math.random() * 100;
+                    drop.style.top = `calc(100vh - ${stackHeight + size}px)`;
+                    drop.style.transform = `rotate(${Math.random() * 360}deg)`;
+                }, 100);
+            }
+
+            // เริ่มปล่อยฝนรักต่อเนื่อง
+            const rainEffect = setInterval(dropLove, 150);
+
+            // หยุดปล่อยฝนหลังจากผ่านไป 15 วินาที (แต่ของที่ตกมาแล้วจะยังอยู่)
+            setTimeout(() => {
+                clearInterval(rainEffect);
+            }, 15000);
         }
     </script>
 </body>
