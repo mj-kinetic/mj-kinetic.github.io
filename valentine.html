@@ -3,143 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MJ-Lab | The Magical Memory Box</title>
+    <title>MJ-Lab | The Infinite Memory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
     <style>
-        body { background-color: #fff1f2; overflow-x: hidden; font-family: 'sans-serif'; }
-        .float-animation { animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .smooth-move { transition: all 1.0s cubic-bezier(0.19, 1, 0.22, 1); }
-        .hidden-section { display: none; }
-        
-        /* Stacked Photos Effect */
-        .photo-stack { position: relative; width: 280px; height: 320px; margin: 0 auto; }
+        :root {
+            --primary: #f43f5e;
+            --bg-soft: #fff1f2;
+        }
+        body { 
+            background-color: var(--bg-soft); 
+            overflow: hidden; 
+            font-family: 'Montserrat', sans-serif;
+            transition: background-color 1.5s ease;
+        }
+        h1, h2, .font-playful { font-family: 'Cherry Bomb One', cursive; }
+
+        /* Smooth Section Transitions */
+        .section-enter {
+            animation: sectionIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .section-exit {
+            animation: sectionOut 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes sectionIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes sectionOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(1.1) translateY(-20px); }
+        }
+
+        /* Stacked Photos Logic */
+        .photo-stack { position: relative; width: 280px; height: 350px; margin: 0 auto; perspective: 1000px; }
         .stacked-photo {
             position: absolute; width: 100%; height: 100%;
-            background: white; padding: 10px 10px 40px 10px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            border: 1px solid #ffe4e6; border-radius: 12px;
-            cursor: pointer; transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.6s;
+            background: white; padding: 12px 12px 45px 12px;
+            box-shadow: 0 15px 35px rgba(244, 63, 94, 0.15);
+            border-radius: 15px;
+            cursor: pointer; 
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
             user-select: none;
         }
-        .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; background: #fdf2f2; }
-        .photo-out { transform: translate(180%, -30%) rotate(45deg) !important; opacity: 0; pointer-events: none; }
+        .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; filter: sepia(20%); }
+        .photo-out { transform: translate(200%, -50%) rotate(45deg) scale(0.5) !important; opacity: 0; pointer-events: none; }
+
+        /* Decorations */
+        .floating-heart {
+            position: absolute; pointer-events: none; animation: floatUp 6s linear infinite; opacity: 0.4;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
         
-        /* Message Box Shine */
-        .card-shine { background: linear-gradient(135deg, #fff 0%, #fff1f2 100%); position: relative; overflow: hidden; }
-        .card-shine::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent); transform: rotate(45deg); animation: shine 4s infinite; }
-        @keyframes shine { 0% { left: -50%; } 100% { left: 150%; } }
+        .smooth-move { transition: all 1.0s cubic-bezier(0.19, 1, 0.22, 1); }
+        .hidden-section { display: none; }
     </style>
 </head>
-<body class="text-slate-800 flex items-center justify-center min-h-screen p-4">
+<body class="text-slate-800 flex items-center justify-center min-h-screen p-4 overflow-hidden">
 
-    <div id="main-container" class="bg-white border-4 border-pink-200 p-8 md:p-12 rounded-[3.5rem] shadow-2xl max-w-lg w-full text-center relative z-50">
+    <div id="decor-container"></div>
+
+    <div id="main-container" class="bg-white/90 backdrop-blur-md border border-white p-8 md:p-12 rounded-[3.5rem] shadow-[0_30px_60px_-15px_rgba(244,63,94,0.3)] max-w-lg w-full text-center relative z-50 transition-all duration-500">
         
-        <div id="icon-box" class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-pink-50 mb-6 float-animation">
-            <span id="display-icon" class="text-4xl">🎁</span>
+        <div id="display-icon" class="text-6xl mb-6 transition-all duration-500 scale-110">🎁</div>
+
+        <div id="section-decoder" class="section-enter">
+            <h1 class="text-4xl text-rose-500 mb-2">Secret Lab</h1>
+            <p class="text-slate-400 text-sm mb-8 tracking-widest uppercase font-bold">Accessing Memories...</p>
+            <input type="text" id="passcode" placeholder="CODE" maxlength="4" class="bg-rose-50 border-none rounded-2xl px-6 py-4 text-center text-rose-500 text-3xl font-black tracking-[0.5em] focus:ring-4 focus:ring-rose-100 w-full mb-6 transition-all shadow-inner">
+            <button onclick="checkCode()" class="w-full bg-rose-500 text-white py-4 rounded-2xl font-bold hover:bg-rose-600 transition-all shadow-lg shadow-rose-200 uppercase tracking-widest active:scale-95">Open Vault</button>
         </div>
 
-        <div id="decoder-section">
-            <h1 class="text-2xl font-black text-rose-600 uppercase mb-4 tracking-tighter">Secret Box Unlock</h1>
-            <input type="text" id="passcode" placeholder="----" maxlength="4" class="bg-pink-50 border-2 border-pink-100 rounded-2xl px-6 py-3 text-center text-rose-500 text-2xl font-bold tracking-[0.5em] focus:outline-none focus:border-rose-300 w-44 mb-6 block mx-auto">
-            <button onclick="checkCode()" class="bg-rose-500 text-white px-10 py-3 rounded-full font-bold hover:scale-105 transition-all shadow-lg shadow-rose-200 uppercase tracking-widest">Open</button>
-        </div>
-
-        <div id="game-section" class="hidden-section space-y-8">
-            <p id="status-msg" class="text-[10px] text-pink-400 font-bold uppercase tracking-widest"></p>
-            <h2 id="question-text" class="text-xl font-bold text-slate-700 min-h-[4rem] flex items-center justify-center"></h2>
-            <div class="flex flex-col items-center gap-4 relative min-h-[160px]">
-                <button onclick="handleYes()" class="bg-rose-500 text-white px-16 py-3 rounded-full text-lg font-bold shadow-xl z-20 active:scale-95">YES</button>
-                <button id="no-btn" class="bg-white border-2 border-pink-100 text-pink-300 px-12 py-2 rounded-full text-lg smooth-move z-10">NO</button>
+        <div id="section-questions" class="hidden-section">
+            <p id="status-msg" class="text-[10px] text-rose-400 font-black uppercase tracking-[0.3em] mb-4"></p>
+            <h2 id="question-text" class="text-2xl font-bold text-slate-700 min-h-[5rem] flex items-center justify-center px-4"></h2>
+            <div class="flex flex-col items-center gap-4 mt-8 relative min-h-[160px]">
+                <button onclick="handleYes()" class="bg-rose-500 text-white px-20 py-4 rounded-full text-xl font-bold shadow-xl shadow-rose-200 transition-all hover:scale-105 active:scale-95">YES</button>
+                <button id="no-btn" class="bg-slate-100 text-slate-400 px-14 py-3 rounded-full text-lg font-medium smooth-move">NO</button>
             </div>
         </div>
 
-        <div id="gallery-random" class="hidden-section space-y-6">
-            <h2 class="text-xl font-black text-rose-600 uppercase">The Random Moments 📸</h2>
-            <p class="text-[11px] text-pink-500 font-bold">คลิกที่รูปเพื่อเปิดความทรงจำทีละใบนะ (10 รูป)</p>
-            <div id="stack-random" class="photo-stack mt-4">
-                </div>
-            <div class="h-8"></div>
-            <button id="next-to-food" onclick="showFoodGallery()" class="hidden-section bg-rose-500 text-white px-8 py-3 rounded-full font-bold shadow-lg animate-bounce mx-auto">ไปหมวดถัดไป ➔</button>
+        <div id="section-random" class="hidden-section">
+            <h2 class="text-3xl text-rose-500 mb-2">Random Moments</h2>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tighter mb-8">Click each photo to slide away</p>
+            <div id="stack-random" class="photo-stack"></div>
+            <div class="h-12"></div>
         </div>
 
-        <div id="gallery-food" class="hidden-section space-y-6">
-            <h2 class="text-xl font-black text-rose-600 uppercase">Our Delicious Logic 🍝</h2>
-            <p class="text-[11px] text-pink-500 font-bold">ความอร่อยที่เราแชร์กัน (10 รูป)</p>
-            <div id="stack-food" class="photo-stack mt-4">
-                </div>
-            <div class="h-8"></div>
-            <button id="next-to-card" onclick="showGreetingCard()" class="hidden-section bg-rose-500 text-white px-8 py-3 rounded-full font-bold shadow-lg animate-bounce mx-auto">เปิดการ์ดอวยพร 💌</button>
+        <div id="section-food" class="hidden-section">
+            <h2 class="text-3xl text-rose-500 mb-2">Delicious Logic</h2>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tighter mb-8">Our taste of happiness</p>
+            <div id="stack-food" class="photo-stack"></div>
+            <div class="h-12"></div>
         </div>
 
-        <div id="greeting-section" class="hidden-section space-y-6">
-            <div class="card-shine border-4 border-double border-rose-200 p-8 rounded-[2.5rem] shadow-inner">
-                <div class="text-3xl mb-4">🧸🌷✨</div>
-                <h3 class="text-2xl font-black text-rose-600 mb-4 font-serif">Dear My Love,</h3>
-                <p class="text-sm leading-relaxed text-slate-600 italic font-medium">
-                    "ขอบคุณที่เป็นรอยยิ้มในทุกๆ วันของ MJ-Lab นะคะ<br>
-                    ความทรงจำทั้งหมดที่เราผ่านมา มันมีค่ามากจริงๆ<br>
-                    ขอให้เรามีกันแบบนี้ไปเรื่อยๆ เลยนะ รักที่สุด!"
-                </p>
-                <div class="mt-6 text-rose-400 font-bold text-xs tracking-widest uppercase">Forever & Always ❤️</div>
+        <div id="section-card" class="hidden-section">
+            <div class="p-1 text-rose-500 text-2xl mb-4">✨ 🌸 ✨</div>
+            <h3 class="text-4xl text-rose-600 mb-6">For You</h3>
+            <div class="space-y-4 text-slate-600 leading-relaxed text-lg font-medium italic">
+                <p>"ขอบคุณที่เป็นเรื่องราวดีๆ ในทุกวัน"</p>
+                <p>"รักที่สุดในลอจิกของหัวใจเลยนะคะ"</p>
             </div>
-            <button onclick="showReplySection()" class="bg-pink-500 text-white px-10 py-3 rounded-full font-bold shadow-lg hover:bg-pink-600 transition-all">ส่งจดหมายกลับหาเรานะ ✍️</button>
+            <div class="mt-10">
+                <button onclick="finalize()" class="bg-rose-500 text-white px-12 py-4 rounded-full font-bold shadow-xl animate-pulse">Celebrate! ❤️</button>
+            </div>
         </div>
 
-        <div id="reply-section" class="hidden-section space-y-6">
-            <h3 class="text-xl font-bold text-rose-600">เขียนความในใจบอก MJ หน่อย...</h3>
-            <textarea id="reply-msg" rows="4" class="w-full bg-pink-50 border-2 border-pink-100 rounded-2xl p-4 text-slate-700 focus:outline-none focus:border-rose-300 shadow-inner" placeholder="พิมพ์ตรงนี้ได้เลยค่ะ..."></textarea>
-            <button onclick="sendLineReply()" class="bg-[#00B900] text-white px-10 py-3 rounded-full font-bold shadow-xl flex items-center justify-center gap-2 mx-auto active:scale-95 transition-transform">
-                ส่งจดหมายผ่าน LINE ➔
-            </button>
-        </div>
-
-        <div id="final-section" class="hidden-section space-y-4">
-            <h1 class="text-4xl font-black text-rose-600 tracking-tighter">HAPPY VALENTINE!</h1>
-            <p class="text-pink-400 font-bold text-sm tracking-[0.4em]">MISSION SUCCESS WITH LOVE</p>
-            <div class="text-7xl mt-6">🥰🌷💖</div>
+        <div id="section-finale" class="hidden-section">
+            <h1 class="text-5xl text-rose-600 mb-4 drop-shadow-sm">HAPPY VALENTINE!</h1>
+            <p class="text-rose-400 font-bold tracking-[0.5em] text-xs">FOREVER WITH YOU</p>
+            <div class="text-8xl mt-12">🥰</div>
         </div>
 
     </div>
 
     <script>
         const questions = [
-            "พร้อมจะเริ่มการทดสอบระดับความหวานหรือยังคะ?",
-            "คุณสัญญาว่าจะตอบแบบใช้หัวใจ (ไม่ใช่ Logic) ไหม?",
-            "คุณชอบ Lab ที่ MJ ตั้งใจสร้างขึ้นมานี้หรือเปล่า?",
-            "ถ้ามีรางวัลรออยู่ตอนจบ จะตื่นเต้นไหมนะ?",
-            "คุณคิดว่าเราควรจะฉลองวันนี้ด้วยกันใช่ไหม?",
-            "คุณเตรียมใจรับความเซอร์ไพรส์หรือยัง?",
-            "ใกล้ถึงข้อสุดท้ายแล้ว... ตื่นเต้นไหมคะ?",
-            "คำถามที่สำคัญที่สุด... Will you be my Valentine?"
+            "พร้อมเริ่มการทดสอบระดับความหวานหรือยังคะ?",
+            "จะตอบแบบใช้หัวใจ (ไม่ใช่ Logic) ใช่ไหม?",
+            "ชอบ Lab ที่ MJ ตั้งใจสร้างนี้หรือเปล่า?",
+            "ถ้ามีรางวัลรออยู่ จะตื่นเต้นไหมนะ?",
+            "เราควรจะฉลองวันนี้ด้วยกันใช่ไหม?",
+            "เตรียมใจรับความเซอร์ไพรส์หรือยัง?",
+            "ใกล้ถึงข้อสุดท้ายแล้ว... ตื่นเต้นไหม?",
+            "คำถามสุดท้าย... Will you be my Valentine?"
         ];
         let currentStep = 0;
 
+        // Create Floating Background
+        function createHearts() {
+            const container = document.getElementById('decor-container');
+            const emojis = ['❤️', '💖', '🌸', '✨'];
+            for(let i=0; i<15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerText = emojis[Math.floor(Math.random()*emojis.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                heart.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(heart);
+            }
+        }
+        createHearts();
+
+        function transition(from, to, bg) {
+            const fromEl = document.getElementById(from);
+            const toEl = document.getElementById(to);
+            fromEl.classList.add('section-exit');
+            if(bg) document.body.style.backgroundColor = bg;
+            
+            setTimeout(() => {
+                fromEl.style.display = 'none';
+                fromEl.classList.remove('section-exit');
+                toEl.style.display = 'block';
+                toEl.classList.add('section-enter');
+            }, 600);
+        }
+
         function checkCode() {
             if (document.getElementById('passcode').value === '1402') {
-                document.getElementById('decoder-section').classList.add('hidden-section');
-                document.getElementById('game-section').classList.remove('hidden-section');
+                transition('section-decoder', 'section-questions');
+                document.getElementById('display-icon').innerText = '💌';
                 updateQuestion();
-            } else { alert("รหัสผิดน้า ลองใหม่อีกครั้งค่ะ!"); }
+            } else {
+                alert("Incorrect Code!");
+            }
         }
 
         function updateQuestion() {
             if (currentStep < questions.length) {
-                document.getElementById('status-msg').innerText = `STEP ${currentStep + 1} / 8`;
+                document.getElementById('status-msg').innerText = `Step ${currentStep + 1} / 8`;
                 document.getElementById('question-text').innerText = questions[currentStep];
                 resetNoBtn();
             } else {
-                document.getElementById('game-section').classList.add('hidden-section');
-                document.getElementById('gallery-random').classList.remove('hidden-section');
+                transition('section-questions', 'section-random', '#fff7ed');
                 document.getElementById('display-icon').innerText = '📸';
                 generateStack('random', 10);
             }
         }
 
         function handleYes() {
-            confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 }, colors: ['#fb7185', '#ffffff'] });
-            currentStep++; updateQuestion();
+            confetti({ particleCount: 40, spread: 70, origin: { y: 0.7 }, colors: ['#f43f5e'] });
+            currentStep++; 
+            updateQuestion();
         }
 
         function resetNoBtn() {
@@ -147,13 +199,12 @@
             noBtn.style.position = "static"; noBtn.style.transform = "none";
         }
 
-        const noBtn = document.getElementById('no-btn');
-        noBtn.addEventListener('mouseover', () => {
-            noBtn.style.position = "fixed";
+        document.getElementById('no-btn').addEventListener('mouseover', function() {
+            this.style.position = "fixed";
             const x = Math.random() * (window.innerWidth - 150);
             const y = Math.random() * (window.innerHeight - 80);
-            noBtn.style.left = '0px'; noBtn.style.top = '0px';
-            noBtn.style.transform = `translate(${x}px, ${y}px)`;
+            this.style.left = '0px'; this.style.top = '0px';
+            this.style.transform = `translate(${x}px, ${y}px)`;
         });
 
         function generateStack(type, count) {
@@ -162,66 +213,38 @@
             for(let i = 0; i < count; i++) {
                 const div = document.createElement('div');
                 div.className = 'stacked-photo';
-                div.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg)`;
+                div.style.transform = `rotate(${(Math.random() - 0.5) * 20}deg) translateY(${i*-2}px)`;
                 div.style.zIndex = count - i;
-                // ใส่รูป placeholder หากยังไม่มีรูปจริง
-                div.innerHTML = `<img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/300x400/fff1f2/e11d48?text=${type}+${i+1}'">`;
+                div.innerHTML = `<img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/300x400/f43f5e/ffffff?text=${type}+${i+1}'">`;
                 
                 div.onclick = function() {
                     this.classList.add('photo-out');
                     remaining--;
                     if(remaining === 0) {
-                        document.getElementById(type === 'random' ? 'next-to-food' : 'next-to-card').style.display = 'block';
+                        setTimeout(() => {
+                            if(type === 'random') {
+                                transition('section-random', 'section-food', '#f0fdf4');
+                                document.getElementById('display-icon').innerText = '🍱';
+                                generateStack('food', 10);
+                            } else {
+                                transition('section-food', 'section-card', '#fdf2f8');
+                                document.getElementById('display-icon').innerText = '💌';
+                            }
+                        }, 800);
                     }
                 };
                 container.appendChild(div);
             }
         }
 
-        function showFoodGallery() {
-            document.getElementById('gallery-random').classList.add('hidden-section');
-            document.getElementById('gallery-food').classList.remove('hidden-section');
-            document.getElementById('display-icon').innerText = '🍝';
-            generateStack('food', 10);
-        }
-
-        function showGreetingCard() {
-            document.getElementById('gallery-food').classList.add('hidden-section');
-            document.getElementById('greeting-section').classList.remove('hidden-section');
-            document.getElementById('display-icon').innerText = '💌';
-        }
-
-        function showReplySection() {
-            document.getElementById('greeting-section').classList.add('hidden-section');
-            document.getElementById('reply-section').classList.remove('hidden-section');
-            document.getElementById('display-icon').innerText = '✍️';
-        }
-
-        function sendLineReply() {
-            const msg = document.getElementById('reply-msg').value;
-            if(!msg) { alert("เขียนข้อความหน่อยน้า MJ รออ่านอยู่ค่ะ"); return; }
+        function finalize() {
+            transition('section-card', 'section-finale', '#fff1f2');
+            document.getElementById('display-icon').innerText = '🎈';
             
-            // ใช้ LINE URL Scheme เพื่อส่งข้อความ
-            const lineLink = `https://line.me/R/msg/text/?${encodeURIComponent("💌 จดหมายตอบกลับ: " + msg)}`;
-            
-            // เปิดหน้า LINE
-            window.location.href = lineLink;
-            
-            // เปลี่ยนเป็นหน้า Finale
-            setTimeout(() => {
-                document.getElementById('reply-section').classList.add('hidden-section');
-                document.getElementById('final-section').classList.remove('hidden-section');
-                document.getElementById('display-icon').innerText = '🥳';
-                startGrandFinale();
-            }, 1000);
-        }
-
-        function startGrandFinale() {
             const end = Date.now() + 15000;
-            const colors = ['#ff0000', '#fb7185', '#ffffff', '#ffd1dc'];
             (function frame() {
-                confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: colors });
-                confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.8 }, colors: colors });
+                confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: ['#f43f5e', '#fb7185', '#ffffff'] });
+                confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.8 }, colors: ['#f43f5e', '#fb7185', '#ffffff'] });
                 if (Date.now() < end) requestAnimationFrame(frame);
             }());
         }
