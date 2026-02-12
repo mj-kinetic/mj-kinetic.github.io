@@ -3,169 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MJ-Lab | Valentine Smooth Celebration</title>
+    <title>MJ-Lab | The Secret Box of Memories</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body { background-color: #fff1f2; overflow: hidden; }
-        @keyframes heart-float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(5deg); }
+        body { background-color: #fff1f2; overflow-x: hidden; font-family: 'sans-serif'; }
+        .float-animation { animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .smooth-move { transition: all 1.0s cubic-bezier(0.19, 1, 0.22, 1); }
+        .hidden-section { display: none; }
+        .polaroid {
+            background: white; padding: 10px 10px 30px 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.5s;
         }
-        .float-animation { animation: heart-float 3s ease-in-out infinite; }
-        
-        /* การตั้งค่าปุ่ม NO: ปรับ transition ให้ยาวขึ้นเป็น 1s เพื่อความ Slow และ Smooth */
-        .smooth-move { 
-            transition: all 1.0s cubic-bezier(0.19, 1, 0.22, 1); 
-        }
+        .polaroid:hover { transform: scale(1.05) rotate(0deg) !important; z-index: 50; }
     </style>
 </head>
 <body class="text-slate-800 flex items-center justify-center min-h-screen p-4">
 
-    <div id="main-card" class="bg-white border-4 border-pink-200 p-10 md:p-14 rounded-[3.5rem] shadow-2xl max-w-lg w-full text-center transition-all duration-500 relative z-50">
+    <div id="main-container" class="bg-white border-4 border-pink-200 p-8 md:p-12 rounded-[3rem] shadow-2xl max-w-lg w-full text-center relative z-50 transition-all duration-700">
         
-        <div id="icon-box" class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-pink-50 mb-8 float-animation">
-            <div id="dynamic-icon" class="text-5xl">💌</div>
+        <div id="icon-box" class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-pink-50 mb-6 float-animation">
+            <span id="display-icon" class="text-4xl">💌</span>
         </div>
 
-        <div id="decoder-section" class="space-y-6">
-            <h1 class="text-3xl font-black tracking-tight text-rose-600 uppercase">Sweet Decoder</h1>
-            <p class="text-sm text-pink-400 font-medium italic">Enter Code 1402 to Unlock Heart</p>
-            <input type="text" id="passcode" placeholder="----" maxlength="4" class="bg-pink-50 border-2 border-pink-100 rounded-2xl px-6 py-4 text-center text-rose-500 text-2xl font-bold tracking-[0.5em] focus:outline-none focus:border-rose-300 w-48 mb-4 block mx-auto shadow-inner">
-            <button onclick="checkCode()" class="block mx-auto text-sm font-bold bg-rose-500 text-white px-10 py-4 rounded-full hover:bg-rose-600 transition-all uppercase tracking-widest shadow-lg shadow-rose-200">Start Project</button>
-            <p id="error-msg" class="text-xs text-rose-400 font-bold hidden">รหัสไม่ถูกต้อง! ลองดูรหัสวันที่ 14/02 นะคะ</p>
+        <div id="decoder-section">
+            <h1 class="text-2xl font-black text-rose-600 uppercase mb-4">Secret Decoder</h1>
+            <input type="text" id="passcode" placeholder="----" maxlength="4" class="bg-pink-50 border-2 border-pink-100 rounded-2xl px-6 py-3 text-center text-rose-500 text-2xl font-bold tracking-[0.5em] focus:outline-none focus:border-rose-300 w-44 mb-6 block mx-auto shadow-inner">
+            <button onclick="checkCode()" class="bg-rose-500 text-white px-8 py-3 rounded-full font-bold hover:bg-rose-600 transition-all shadow-lg">UNLOCK</button>
         </div>
 
-        <div id="game-section" class="hidden space-y-8">
-            <p id="status-msg" class="text-[10px] text-pink-500 font-bold uppercase tracking-[0.2em]"></p>
-            <h2 id="question-text" class="text-2xl font-bold text-slate-700 min-h-[4rem] px-2 flex items-center justify-center leading-tight"></h2>
-            
-            <div id="btn-container" class="flex flex-col items-center gap-4 relative min-h-[180px]">
-                <button onclick="handleYes()" class="bg-rose-500 hover:bg-rose-600 text-white px-16 py-3 rounded-full text-lg font-bold shadow-xl shadow-rose-200 transition-all z-20 active:scale-95">YES</button>
-                <button id="no-btn" class="bg-white border-2 border-pink-100 text-pink-300 px-12 py-3 rounded-full text-lg font-medium smooth-move z-10">NO</button>
+        <div id="game-section" class="hidden-section space-y-6">
+            <p id="status-msg" class="text-[10px] text-pink-500 font-bold uppercase tracking-widest"></p>
+            <h2 id="question-text" class="text-xl font-bold text-slate-700 min-h-[4rem] flex items-center justify-center"></h2>
+            <div class="flex flex-col items-center gap-4 relative min-h-[160px]">
+                <button onclick="handleYes()" class="bg-rose-500 text-white px-14 py-3 rounded-full text-lg font-bold shadow-xl z-20">YES</button>
+                <button id="no-btn" class="bg-white border-2 border-pink-100 text-pink-300 px-10 py-2 rounded-full text-lg smooth-move z-10">NO</button>
             </div>
         </div>
 
-        <div id="final-section" class="hidden space-y-6">
-            <div class="text-6xl mb-4">🥳</div>
-            <h1 class="text-4xl font-black text-rose-600 tracking-tight leading-tight">Happy Valentine's Day!</h1>
-            <div class="p-6 bg-pink-50 rounded-3xl">
-                <p class="text-rose-500 font-bold text-xl mb-2">Decoding Complete!</p>
-                <p class="text-pink-400 italic text-sm">Every logic is now filled with love.</p>
-            </div>
-            <p class="text-[10px] text-pink-300 uppercase tracking-[0.4em] font-bold">Project Success</p>
+        <div id="transition-section" class="hidden-section space-y-6">
+            <h2 class="text-2xl font-bold text-rose-600">ยินดีด้วยค่ะ! คุณผ่านด่านทดสอบแล้ว</h2>
+            <p class="text-slate-500 italic">พร้อมหรือยังที่จะไปดูว่า "เราไปไหนกันมาบ้าง" และความทรงจำเล็กๆ ของเรา?</p>
+            <button onclick="showGallery('random')" class="bg-rose-500 text-white px-10 py-3 rounded-full font-bold animate-bounce">พร้อมแล้ว! (เปิดกล่องลับ)</button>
         </div>
+
+        <div id="gallery-random" class="hidden-section space-y-6">
+            <h2 class="text-xl font-black text-rose-600 uppercase">The Random Moments 📸</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="polaroid rotate-[-3deg]"><div class="bg-slate-100 aspect-square mb-2 overflow-hidden"><img src="random1.jpg" class="object-cover w-full h-full" onerror="this.src='https://via.placeholder.com/150?text=Memory+1'"></div><p class="text-[8px] font-bold">SO CUTE!</p></div>
+                <div class="polaroid rotate-[4deg]"><div class="bg-slate-100 aspect-square mb-2 overflow-hidden"><img src="random2.jpg" class="object-cover w-full h-full" onerror="this.src='https://via.placeholder.com/150?text=Memory+2'"></div><p class="text-[8px] font-bold">HAHA MOMENT</p></div>
+            </div>
+            <button onclick="showGallery('food')" class="text-rose-500 font-bold text-sm underline mt-4">ดูหมวดถัดไป (Delicious Logic) ➔</button>
+        </div>
+
+        <div id="gallery-food" class="hidden-section space-y-6">
+            <h2 class="text-xl font-black text-rose-600 uppercase">Our Delicious Logic 🍝</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="polaroid rotate-[2deg]"><div class="bg-slate-100 aspect-square mb-2 overflow-hidden"><img src="food1.jpg" class="object-cover w-full h-full" onerror="this.src='https://via.placeholder.com/150?text=Yummy+1'"></div><p class="text-[8px] font-bold">BEST MEAL</p></div>
+                <div class="polaroid rotate-[-5deg]"><div class="bg-slate-100 aspect-square mb-2 overflow-hidden"><img src="food2.jpg" class="object-cover w-full h-full" onerror="this.src='https://via.placeholder.com/150?text=Yummy+2'"></div><p class="text-[8px] font-bold">SWEET DAY</p></div>
+            </div>
+            <button onclick="showGreeting()" class="bg-rose-500 text-white px-8 py-3 rounded-full font-bold mt-4 shadow-lg">เปิดการ์ดอวยพร 💌</button>
+        </div>
+
+        <div id="greeting-section" class="hidden-section space-y-6">
+            <div class="bg-pink-50 border-2 border-dashed border-pink-300 p-6 rounded-3xl relative">
+                <h3 class="text-2xl font-black text-rose-600 mb-4">To My Special Person</h3>
+                <p class="text-sm leading-relaxed text-slate-600 italic">
+                    "ขอบคุณที่อยู่ด้วยกันในทุกๆ ลอจิกของชีวิตนะคะ<br>
+                    ขอให้วันวาเลนไทน์นี้เป็นวันที่อบอุ่นที่สุด<br>
+                    รักนะคะ จาก MJ-Lab"
+                </p>
+                <div class="mt-4 text-3xl">💝✨🌸</div>
+            </div>
+            <button onclick="showFinal()" class="bg-rose-500 text-white px-10 py-3 rounded-full font-bold shadow-xl uppercase tracking-tighter">FINISH & CELEBRATE!</button>
+        </div>
+
+        <div id="final-section" class="hidden-section space-y-4">
+            <h1 class="text-4xl font-black text-rose-600 animate-pulse">HAPPY VALENTINE'S DAY!</h1>
+            <p class="text-pink-400 font-bold uppercase tracking-widest text-xs">Mission Accomplished with Love</p>
+            <div class="text-6xl mt-4">🥰🌷💖</div>
+        </div>
+
     </div>
 
     <script>
         const questions = [
-            { text: "พร้อมจะเริ่มการทดสอบระดับความหวานหรือยังคะ?", icon: "🚀" },
-            { text: "คุณสัญญาว่าจะตอบแบบใช้หัวใจ (ไม่ใช่ Logic) ไหม?", icon: "🍭" },
-            { text: "คุณชอบ Lab ที่ MJ ตั้งใจสร้างขึ้นมานี้หรือเปล่า?", icon: "✨" },
-            { text: "ถ้ามีรางวัลรออยู่ตอนจบ จะตื่นเต้นไหมนะ?", icon: "🎁" },
-            { text: "คุณคิดว่าเราควรจะฉลองวันนี้ด้วยกันใช่ไหม?", icon: "🎈" },
-            { text: "คุณเตรียมใจรับความเซอร์ไพรส์หรือยัง?", icon: "🧸" },
-            { text: "ใกล้ถึงข้อสุดท้ายแล้ว... ตื่นเต้นไหมคะ?", icon: "🍬" },
-            { text: "คำถามที่สำคัญที่สุด... Will you be my Valentine?", icon: "💌" }
+            "พร้อมจะเริ่มการทดสอบระดับความหวานหรือยังคะ?",
+            "คุณสัญญาว่าจะตอบแบบใช้หัวใจ (ไม่ใช่ Logic) ไหม?",
+            "คุณชอบ Lab ที่ MJ ตั้งใจสร้างขึ้นมานี้หรือเปล่า?",
+            "ถ้ามีรางวัลรออยู่ตอนจบ จะตื่นเต้นไหมนะ?",
+            "คุณคิดว่าเราควรจะฉลองวันนี้ด้วยกันใช่ไหม?",
+            "คุณเตรียมใจรับความเซอร์ไพรส์หรือยัง?",
+            "ใกล้ถึงข้อสุดท้ายแล้ว... ตื่นเต้นไหมคะ?",
+            "คำถามที่สำคัญที่สุด... Will you be my Valentine?"
         ];
-        
         let currentStep = 0;
 
         function checkCode() {
             if (document.getElementById('passcode').value === '1402') {
-                document.getElementById('decoder-section').classList.add('hidden');
-                document.getElementById('game-section').classList.remove('hidden');
-                startNextQuestion();
+                document.getElementById('decoder-section').style.display = 'none';
+                document.getElementById('game-section').style.display = 'block';
+                updateQuestion();
             } else {
-                document.getElementById('error-msg').classList.remove('hidden');
-                setTimeout(() => document.getElementById('error-msg').classList.add('hidden'), 2000);
+                alert("รหัสไม่ถูกต้องค่ะ!");
             }
         }
 
-        function startNextQuestion() {
+        function updateQuestion() {
             if (currentStep < questions.length) {
-                document.getElementById('status-msg').innerText = `Logic Step ${currentStep + 1} of 8`;
-                document.getElementById('question-text').innerText = questions[currentStep].text;
-                document.getElementById('dynamic-icon').innerText = questions[currentStep].icon;
-                resetNoButton();
+                document.getElementById('status-msg').innerText = `STEP ${currentStep + 1} OF 8`;
+                document.getElementById('question-text').innerText = questions[currentStep];
+                resetNoBtn();
             } else {
-                showFinal();
+                document.getElementById('game-section').style.display = 'none';
+                document.getElementById('transition-section').style.display = 'block';
             }
-        }
-
-        function resetNoButton() {
-            const noBtn = document.getElementById('no-btn');
-            noBtn.style.position = "static";
-            noBtn.style.transform = "translate(0, 0)";
         }
 
         function handleYes() {
-            // พลุเล็กๆ ตอนเปลี่ยนข้อ
             confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 }, colors: ['#fb7185', '#ffffff'] });
-            
             currentStep++;
-            if (currentStep < questions.length) {
-                startNextQuestion();
-            } else {
-                showFinal();
-            }
+            updateQuestion();
         }
 
-        // ปุ่ม NO วิ่งหนีแบบ Slow & Smooth
+        function resetNoBtn() {
+            const noBtn = document.getElementById('no-btn');
+            noBtn.style.position = "static";
+            noBtn.style.transform = "none";
+        }
+
         const noBtn = document.getElementById('no-btn');
         noBtn.addEventListener('mouseover', () => {
             noBtn.style.position = "fixed";
-            const padding = 100;
-            const newX = Math.random() * (window.innerWidth - padding * 2) + padding;
-            const newY = Math.random() * (window.innerHeight - padding * 2) + padding;
-            
-            noBtn.style.left = '0px';
-            noBtn.style.top = '0px';
-            noBtn.style.transform = `translate(${newX}px, ${newY}px)`;
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 50);
+            noBtn.style.left = '0px'; noBtn.style.top = '0px';
+            noBtn.style.transform = `translate(${x}px, ${y}px)`;
         });
 
-        // Grand Finale: พลุแบบจัดเต็ม 15 วินาที
+        function showGallery(type) {
+            document.getElementById('transition-section').style.display = 'none';
+            document.getElementById('gallery-random').style.display = 'none';
+            if(type === 'random') {
+                document.getElementById('gallery-random').style.display = 'block';
+                document.getElementById('display-icon').innerText = '📸';
+            } else {
+                document.getElementById('gallery-food').style.display = 'block';
+                document.getElementById('display-icon').innerText = '🍝';
+            }
+        }
+
+        function showGreeting() {
+            document.getElementById('gallery-food').style.display = 'none';
+            document.getElementById('greeting-section').style.display = 'block';
+            document.getElementById('display-icon').innerText = '💌';
+        }
+
         function showFinal() {
-            document.getElementById('game-section').classList.add('hidden');
-            document.getElementById('final-section').classList.remove('hidden');
-            document.getElementById('dynamic-icon').innerText = '🥰';
-
-            const duration = 15 * 1000;
-            const animationEnd = Date.now() + duration;
-            const colors = ['#e11d48', '#fb7185', '#ffffff', '#ff0000', '#ffd1dc'];
-
+            document.getElementById('greeting-section').style.display = 'none';
+            document.getElementById('final-section').style.display = 'block';
+            document.getElementById('display-icon').innerText = '🥰';
+            
+            const end = Date.now() + 15000;
             (function frame() {
-                const timeLeft = animationEnd - Date.now();
-
-                // ยิงพลุจากมุมซ้ายและขวา
-                confetti({
-                    particleCount: 2,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0, y: 0.8 },
-                    colors: colors
-                });
-                confetti({
-                    particleCount: 2,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1, y: 0.8 },
-                    colors: colors
-                });
-
-                // ยิงสุ่มตรงกลาง
-                if (Math.random() > 0.7) {
-                    confetti({
-                        particleCount: 1,
-                        origin: { x: Math.random(), y: Math.random() - 0.2 },
-                        colors: colors,
-                        scalar: 1.2
-                    });
-                }
-
-                if (timeLeft > 0) {
-                    requestAnimationFrame(frame);
-                }
+                confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: ['#e11d48', '#fb7185', '#ffffff'] });
+                confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.8 }, colors: ['#e11d48', '#fb7185', '#ffffff'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
             }());
         }
     </script>
