@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MJ-Lab | The Infinite Memory</title>
+    <title>MJ-Lab | The Cinematic Memory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&family=Cherry+Bomb+One&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -16,10 +16,13 @@
         body { 
             background-color: var(--bg-soft); 
             overflow: hidden; 
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             transition: background-color 1.5s ease;
         }
         h1, h2, .font-playful { font-family: 'Cherry Bomb One', cursive; }
+        
+        /* Modern Typography สำหรับคำถามและปุ่ม */
+        .modern-text { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
 
         /* Smooth Section Transitions */
         .section-enter {
@@ -48,10 +51,14 @@
             transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
             user-select: none;
         }
-        .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; filter: sepia(20%); }
+        .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
         .photo-out { transform: translate(200%, -50%) rotate(45deg) scale(0.5) !important; opacity: 0; pointer-events: none; }
 
-        /* Decorations */
+        /* Smooth Move for NO button - ปรับ Transition ให้ยาวขึ้น */
+        .smooth-move { 
+            transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1); 
+        }
+
         .floating-heart {
             position: absolute; pointer-events: none; animation: floatUp 6s linear infinite; opacity: 0.4;
         }
@@ -61,7 +68,6 @@
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
         
-        .smooth-move { transition: all 1.0s cubic-bezier(0.19, 1, 0.22, 1); }
         .hidden-section { display: none; }
     </style>
 </head>
@@ -69,36 +75,37 @@
 
     <div id="decor-container"></div>
 
-    <div id="main-container" class="bg-white/90 backdrop-blur-md border border-white p-8 md:p-12 rounded-[3.5rem] shadow-[0_30px_60px_-15px_rgba(244,63,94,0.3)] max-w-lg w-full text-center relative z-50 transition-all duration-500">
+    <div id="main-container" class="bg-white/90 backdrop-blur-md border border-white p-8 md:p-12 rounded-[3.5rem] shadow-[0_30px_60px_-15px_rgba(244,63,94,0.3)] max-w-lg w-full text-center relative z-50">
         
-        <div id="display-icon" class="text-6xl mb-6 transition-all duration-500 scale-110">🎁</div>
+        <div id="display-icon" class="text-6xl mb-6 scale-110">🎁</div>
 
         <div id="section-decoder" class="section-enter">
             <h1 class="text-4xl text-rose-500 mb-2">Secret Lab</h1>
-            <p class="text-slate-400 text-sm mb-8 tracking-widest uppercase font-bold">Accessing Memories...</p>
-            <input type="text" id="passcode" placeholder="CODE" maxlength="4" class="bg-rose-50 border-none rounded-2xl px-6 py-4 text-center text-rose-500 text-3xl font-black tracking-[0.5em] focus:ring-4 focus:ring-rose-100 w-full mb-6 transition-all shadow-inner">
-            <button onclick="checkCode()" class="w-full bg-rose-500 text-white py-4 rounded-2xl font-bold hover:bg-rose-600 transition-all shadow-lg shadow-rose-200 uppercase tracking-widest active:scale-95">Open Vault</button>
+            <p class="text-slate-400 text-xs mb-8 tracking-[0.3em] uppercase font-bold modern-text">Accessing Memories</p>
+            <input type="text" id="passcode" placeholder="CODE" maxlength="4" class="bg-rose-50 border-none rounded-2xl px-6 py-4 text-center text-rose-500 text-3xl font-black tracking-[0.5em] focus:ring-4 focus:ring-rose-100 w-full mb-6 transition-all shadow-inner modern-text">
+            <button onclick="checkCode()" class="w-full bg-rose-500 text-white py-4 rounded-2xl font-extrabold hover:bg-rose-600 transition-all shadow-lg uppercase tracking-widest active:scale-95 modern-text">Open Vault</button>
         </div>
 
         <div id="section-questions" class="hidden-section">
-            <p id="status-msg" class="text-[10px] text-rose-400 font-black uppercase tracking-[0.3em] mb-4"></p>
+            <p id="status-msg" class="text-[10px] text-rose-400 font-extrabold uppercase tracking-[0.4em] mb-4 modern-text"></p>
             <h2 id="question-text" class="text-2xl font-bold text-slate-700 min-h-[5rem] flex items-center justify-center px-4"></h2>
-            <div class="flex flex-col items-center gap-4 mt-8 relative min-h-[160px]">
-                <button onclick="handleYes()" class="bg-rose-500 text-white px-20 py-4 rounded-full text-xl font-bold shadow-xl shadow-rose-200 transition-all hover:scale-105 active:scale-95">YES</button>
-                <button id="no-btn" class="bg-slate-100 text-slate-400 px-14 py-3 rounded-full text-lg font-medium smooth-move">NO</button>
+            
+            <div id="btn-container" class="flex flex-col items-center gap-4 mt-8 relative min-h-[160px]">
+                <button onclick="handleYes()" class="bg-rose-500 text-white px-20 py-4 rounded-full text-xl font-extrabold shadow-xl shadow-rose-200 transition-all hover:scale-105 active:scale-95 modern-text">YES</button>
+                <button id="no-btn" class="bg-slate-100 text-slate-400 px-14 py-3 rounded-full text-lg font-bold smooth-move modern-text">NO</button>
             </div>
         </div>
 
         <div id="section-random" class="hidden-section">
             <h2 class="text-3xl text-rose-500 mb-2">Random Moments</h2>
-            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tighter mb-8">Click each photo to slide away</p>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-8 modern-text">Click photos to slide away</p>
             <div id="stack-random" class="photo-stack"></div>
             <div class="h-12"></div>
         </div>
 
         <div id="section-food" class="hidden-section">
             <h2 class="text-3xl text-rose-500 mb-2">Delicious Logic</h2>
-            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tighter mb-8">Our taste of happiness</p>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-8 modern-text">Our taste of happiness</p>
             <div id="stack-food" class="photo-stack"></div>
             <div class="h-12"></div>
         </div>
@@ -111,13 +118,13 @@
                 <p>"รักที่สุดในลอจิกของหัวใจเลยนะคะ"</p>
             </div>
             <div class="mt-10">
-                <button onclick="finalize()" class="bg-rose-500 text-white px-12 py-4 rounded-full font-bold shadow-xl animate-pulse">Celebrate! ❤️</button>
+                <button onclick="finalize()" class="bg-rose-500 text-white px-12 py-4 rounded-full font-bold shadow-xl animate-pulse modern-text">Celebrate! ❤️</button>
             </div>
         </div>
 
         <div id="section-finale" class="hidden-section">
             <h1 class="text-5xl text-rose-600 mb-4 drop-shadow-sm">HAPPY VALENTINE!</h1>
-            <p class="text-rose-400 font-bold tracking-[0.5em] text-xs">FOREVER WITH YOU</p>
+            <p class="text-rose-400 font-extrabold tracking-[0.5em] text-xs modern-text uppercase">Forever with you</p>
             <div class="text-8xl mt-12">🥰</div>
         </div>
 
@@ -136,7 +143,6 @@
         ];
         let currentStep = 0;
 
-        // Create Floating Background
         function createHearts() {
             const container = document.getElementById('decor-container');
             const emojis = ['❤️', '💖', '🌸', '✨'];
@@ -171,14 +177,12 @@
                 transition('section-decoder', 'section-questions');
                 document.getElementById('display-icon').innerText = '💌';
                 updateQuestion();
-            } else {
-                alert("Incorrect Code!");
-            }
+            } else { alert("Code is 1402! 🌸"); }
         }
 
         function updateQuestion() {
             if (currentStep < questions.length) {
-                document.getElementById('status-msg').innerText = `Step ${currentStep + 1} / 8`;
+                document.getElementById('status-msg').innerText = `STEP ${currentStep + 1} / 8`;
                 document.getElementById('question-text').innerText = questions[currentStep];
                 resetNoBtn();
             } else {
@@ -196,14 +200,20 @@
 
         function resetNoBtn() {
             const noBtn = document.getElementById('no-btn');
-            noBtn.style.position = "static"; noBtn.style.transform = "none";
+            noBtn.style.position = "static";
+            noBtn.style.transform = "none";
         }
 
+        // Logic ปุ่ม NO: วิ่งหนีแบบ Smooth และจำกัดระยะการวิ่ง
         document.getElementById('no-btn').addEventListener('mouseover', function() {
             this.style.position = "fixed";
-            const x = Math.random() * (window.innerWidth - 150);
-            const y = Math.random() * (window.innerHeight - 80);
-            this.style.left = '0px'; this.style.top = '0px';
+            // จำกัดระยะห่างจากกึ่งกลาง (วิ่งไม่ไกลเกินไป)
+            const range = 200; 
+            const x = (Math.random() * range * 2) - range + (window.innerWidth / 2 - 75);
+            const y = (Math.random() * range * 2) - range + (window.innerHeight / 2 - 25);
+            
+            this.style.left = '0px'; 
+            this.style.top = '0px';
             this.style.transform = `translate(${x}px, ${y}px)`;
         });
 
@@ -240,7 +250,6 @@
         function finalize() {
             transition('section-card', 'section-finale', '#fff1f2');
             document.getElementById('display-icon').innerText = '🎈';
-            
             const end = Date.now() + 15000;
             (function frame() {
                 confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: ['#f43f5e', '#fb7185', '#ffffff'] });
