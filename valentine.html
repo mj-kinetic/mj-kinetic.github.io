@@ -54,7 +54,7 @@
         }
 
         #yes-btn {
-            z-index: 100; /* ให้ YES อยู่บนสุดเสมอ */
+            z-index: 100;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             white-space: nowrap;
             position: relative;
@@ -67,7 +67,7 @@
             will-change: left, top; 
             font-weight: 600;
             position: absolute;
-            z-index: 40; /* ให้ NO อยู่ต่ำกว่า YES */
+            z-index: 40;
         }
 
         .heart-widget {
@@ -92,6 +92,22 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.15); }
             100% { transform: scale(1); }
+        }
+
+        /* Typing cursor effect */
+        .typing::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Finale SVG Pulse */
+        .finale-heart {
+            animation: pulse-soft 2s infinite ease-in-out;
+        }
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.2)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(244, 63, 94, 0.4)); }
         }
 
         .hidden-section { display: none; }
@@ -119,11 +135,7 @@
             <p class="text-rose-500 font-bold mb-8 uppercase tracking-widest text-sm">ใน 100% รักฉันกี่ %?</p>
             <div class="heart-widget mb-6" onclick="chargeHeart()">
                 <svg class="heart-svg" viewBox="0 0 32 32">
-                    <defs>
-                        <clipPath id="heartClip">
-                            <rect id="fillLevel" x="0" y="32" width="32" height="32" />
-                        </clipPath>
-                    </defs>
+                    <defs><clipPath id="heartClip"><rect id="fillLevel" x="0" y="32" width="32" height="32" /></clipPath></defs>
                     <path class="heart-bg" d="M16 28.5L14.1 26.6C7.3 20.5 2.8 16.4 2.8 11.4C2.8 7.3 6 4.1 10.1 4.1C12.4 4.1 14.6 5.2 16 7C17.4 5.2 19.6 4.1 21.9 4.1C26 4.1 29.2 7.3 29.2 11.4C29.2 16.4 24.7 20.5 17.9 26.6L16 28.5Z"/>
                     <path class="heart-fill-path" clip-path="url(#heartClip)" d="M16 28.5L14.1 26.6C7.3 20.5 2.8 16.4 2.8 11.4C2.8 7.3 6 4.1 10.1 4.1C12.4 4.1 14.6 5.2 16 7C17.4 5.2 19.6 4.1 21.9 4.1C26 4.1 29.2 7.3 29.2 11.4C29.2 16.4 24.7 20.5 17.9 26.6L16 28.5Z"/>
                 </svg>
@@ -143,8 +155,28 @@
 
         <div id="section-random" class="hidden-section section-fade"><h2 class="text-2xl text-slate-800 mb-2">Memory Stack #01</h2><p class="text-[10px] text-slate-400 mb-10 font-bold uppercase tracking-widest">Click to reveal next layer</p><div id="stack-random" class="photo-stack"></div></div>
         <div id="section-food" class="hidden-section section-fade"><h2 class="text-2xl text-slate-800 mb-2">Memory Stack #02</h2><p class="text-[10px] text-slate-400 mb-10 font-bold uppercase tracking-widest">Delicious Fragments</p><div id="stack-food" class="photo-stack"></div></div>
-        <div id="section-card" class="hidden-section section-fade"><div class="text-rose-500 text-3xl mb-6">💌</div><h3 class="text-3xl text-slate-800 mb-8">Hello, Darling</h3><div class="space-y-4 text-slate-600 text-lg font-medium italic"><p>"ขอบคุณที่อยู่เคียงข้างกันเสมอมา"</p><p>"คุณคือ Logic ที่สมบูรณ์แบบที่สุดของ MJ เลยนะ"</p></div><button onclick="finalize()" class="mt-12 bg-rose-500 text-white px-12 py-4 rounded-full font-bold shadow-xl animate-bounce">THE END ❤️</button></div>
-        <div id="section-finale" class="hidden-section section-fade"><h1 class="text-4xl text-rose-600 mb-4">MISSION COMPLETE!</h1><p class="text-slate-400 font-bold tracking-[0.4em] text-xs uppercase">Happy Valentine's Day</p><div class="text-8xl mt-12">🥰</div></div>
+
+        <div id="section-card" class="hidden-section section-fade">
+            <div class="text-rose-500 text-3xl mb-6">💌</div>
+            <h3 class="text-3xl text-slate-800 mb-8">Hello, Darling</h3>
+            <div id="typing-container" class="space-y-4 text-slate-600 text-lg font-medium italic min-h-[120px]">
+                <p id="type-p1"></p>
+                <p id="type-p2"></p>
+            </div>
+            <button id="final-cta" onclick="finalize()" class="mt-12 bg-rose-500 text-white px-12 py-4 rounded-full font-bold shadow-xl animate-bounce opacity-0 transition-opacity duration-1000">THE END ❤️</button>
+        </div>
+
+        <div id="section-finale" class="hidden-section section-fade">
+            <div class="flex justify-center mb-8">
+                <svg class="w-32 h-32 finale-heart" viewBox="0 0 100 100">
+                    <path fill="#f43f5e" d="M92.71,7.27c-9.71-9.69-25.46-9.69-35.18,0L50,14.79l-7.53-7.52C32.75-2.42,17-2.42,7.29,7.27 c-9.71,9.69-9.71,25.41,0,35.1L50,85l42.71-42.63C102.43,32.68,102.43,16.96,92.71,7.27z"/>
+                    <path fill="#fda4af" opacity="0.8" d="M72,55c-4.42-4.41-11.58-4.41-16,0L50,61l-6-6c-4.42-4.41-11.58-4.41-16,0 c-4.42,4.41-4.42,11.56,0,15.97L50,93l22-22.03C76.42,66.56,76.42,59.41,72,55z"/>
+                </svg>
+            </div>
+            <h1 class="text-4xl text-rose-600 mb-4">MISSION COMPLETE!</h1>
+            <p class="text-slate-400 font-bold tracking-[0.4em] text-xs uppercase">Happy Valentine's Day</p>
+            <p class="text-slate-500 mt-6 font-medium italic">"You are my favorite logic."</p>
+        </div>
     </div>
 
     <script>
@@ -172,6 +204,11 @@
             document.getElementById(from).classList.add('hidden-section');
             document.getElementById(to).classList.remove('hidden-section');
             if(bgColor) document.body.style.backgroundColor = bgColor;
+            
+            // Trigger Typing Effect if entering card section
+            if(to === 'section-card') {
+                startTyping();
+            }
         }
 
         function checkCode() {
@@ -186,19 +223,15 @@
                 const fillRect = document.getElementById('fillLevel');
                 const chargeText = document.getElementById('charge-percent');
                 const nextBtn = document.getElementById('charge-next-btn');
-                const heartWidget = document.querySelector('.heart-widget');
                 fillRect.setAttribute('y', 32 - (32 * (heartCharge / 100)));
                 chargeText.innerText = `${heartCharge}%`;
                 chargeText.style.color = `rgba(244, 63, 94, ${0.3 + (heartCharge/100)})`;
-                heartWidget.classList.remove('heart-beat-anim');
-                void heartWidget.offsetWidth;
-                heartWidget.classList.add('heart-beat-anim');
                 if (heartCharge === 100) {
-                    confetti({ particleCount: 50, spread: 80, origin: { y: 0.6 }, colors: ['#f43f5e'] });
+                    confetti({ particleCount: 50, spread: 80, origin: { y: 0.6 } });
                     nextBtn.disabled = false;
                     nextBtn.innerText = "Authorize Access";
-                    nextBtn.classList.remove('bg-slate-200', 'text-slate-400', 'cursor-not-allowed');
-                    nextBtn.classList.add('bg-slate-900', 'text-white', 'hover:bg-slate-800');
+                    nextBtn.classList.remove('bg-slate-200', 'text-slate-400');
+                    nextBtn.classList.add('bg-slate-900', 'text-white');
                 }
             }
         }
@@ -217,7 +250,7 @@
         }
 
         function handleYes() {
-            confetti({ particleCount: 30, spread: 60, origin: { y: 0.8 }, colors: ['#f43f5e'] });
+            confetti({ particleCount: 30, spread: 60, origin: { y: 0.8 } });
             currentStep++; 
             updateQuestion();
         }
@@ -238,47 +271,55 @@
         const btnArea = document.getElementById('btn-area');
 
         noBtn.addEventListener('mouseover', function() {
-            // จำกัดขนาด YES สูงสุดที่ 2.0
-            if (yesScale < 2.0) {
-                yesScale += 0.15;
-                yesBtn.style.transform = `scale(${yesScale})`;
-            }
-
+            if (yesScale < 2.0) { yesScale += 0.15; yesBtn.style.transform = `scale(${yesScale})`; }
             const areaRect = btnArea.getBoundingClientRect();
             const yesRect = yesBtn.getBoundingClientRect();
             const btnW = noBtn.offsetWidth;
             const btnH = noBtn.offsetHeight;
-
-            let newX, newY, isOverlapping;
-            let attempts = 0;
-            
+            let newX, newY, isOverlapping, attempts = 0;
             do {
                 newX = Math.random() * (areaRect.width - btnW);
                 newY = Math.random() * (areaRect.height - btnH);
-                
-                const noR = {
-                    left: areaRect.left + newX,
-                    right: areaRect.left + newX + btnW,
-                    top: areaRect.top + newY,
-                    bottom: areaRect.top + newY + btnH
-                };
-
-                // เช็กทับซ้อน (มีระยะห่าง 10px)
-                isOverlapping = !(noR.right < yesRect.left - 10 || 
-                                  noR.left > yesRect.right + 10 || 
-                                  noR.bottom < yesRect.top - 10 || 
-                                  noR.top > yesRect.bottom + 10);
+                const noR = { left: areaRect.left + newX, right: areaRect.left + newX + btnW, top: areaRect.top + newY, bottom: areaRect.top + newY + btnH };
+                isOverlapping = !(noR.right < yesRect.left - 10 || noR.left > yesRect.right + 10 || noR.bottom < yesRect.top - 10 || noR.top > yesRect.bottom + 10);
                 attempts++;
-                // ถ้าสุ่มเกิน 20 ครั้งแล้วยังทับ (กรณี YES ใหญ่มาก) ให้ข้ามการเช็กไปเลยแต่เน้นจุดขอบๆ
-                if(attempts > 20) { isOverlapping = false; }
-
+                if(attempts > 20) isOverlapping = false;
             } while (isOverlapping);
-
             noBtn.style.position = "absolute";
             noBtn.style.marginTop = "0";
             noBtn.style.left = `${newX}px`;
             noBtn.style.top = `${newY}px`;
         });
+
+        // Typing Effect Logic
+        function startTyping() {
+            const line1 = "ขอบคุณที่อยู่เคียงข้างกันเสมอมา";
+            const line2 = "คุณคือ Logic ที่สมบูรณ์แบบที่สุดของ MJ เลยนะ";
+            typeText('type-p1', line1, 70, () => {
+                setTimeout(() => {
+                    typeText('type-p2', line2, 70, () => {
+                        document.getElementById('final-cta').classList.remove('opacity-0');
+                    });
+                }, 500);
+            });
+        }
+
+        function typeText(elementId, text, speed, callback) {
+            let i = 0;
+            const element = document.getElementById(elementId);
+            element.classList.add('typing');
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    element.classList.remove('typing');
+                    if(callback) callback();
+                }
+            }
+            type();
+        }
 
         function generateStack(type, count, captions) {
             const container = document.getElementById(type === 'random' ? 'stack-random' : 'stack-food');
