@@ -111,26 +111,20 @@
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
-        // --- YouTube Music Setup ---
+        // --- YouTube Music Setup (Fixed Version) ---
         let player;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
                 height: '0',
                 width: '0',
-                videoId: 'vMUeFBHwzSI', // ID เพลงรัก - Three Man Down
+                videoId: 'vMUeFBHwzSI', // เพลงรัก - Three Man Down
                 playerVars: {
                     'autoplay': 0,
                     'controls': 0,
                     'loop': 1,
-                    'playlist': 'U-fXJ6uNid8'
-                },
-                events: {
-                    'onReady': onPlayerReady
+                    'playlist': 'vMUeFBHwzSI' // ต้องตรงกับ videoId เพื่อให้ Loop ทำงาน
                 }
             });
-        }
-        function onPlayerReady(event) {
-            // Player พร้อมใช้งาน
         }
 
         const randomCaptions = ["ไปเที่ยวไหนเนี่ย 🚗", "ไปดูโขน ชอบมาก 🎭", "ชอบทะเล 🌊", "ไปซื้อของกินกันเยอะๆ 🛒", "ไปโยนๆหลายๆที่เลย 🎢", "นั่งที่สวนดูผมพี่ 🌳", "ชอบดอกไม้ 🌸", "ไปเที่ยวอีกไหมคะ ✈️", "ไปปั่นจักรยานด้วย 🚲", "ไปกินเนื้อร้านอร่อย 🥩"];
@@ -161,8 +155,9 @@
 
         function checkCode() {
             if (document.getElementById('passcode').value === '35250*') {
-                // เริ่มเล่นเพลงเมื่อกดยืนยัน (User Interaction)
+                // เริ่มเล่นเพลงทันทีเมื่อกดยืนยัน (User Interaction)
                 if (player && player.playVideo) {
+                    player.unMute(); 
                     player.playVideo();
                 }
                 transition('section-decoder', 'section-charge');
