@@ -29,12 +29,13 @@
         .stacked-photo {
             position: absolute; width: 100%; height: 100%;
             background: white; padding: 10px 10px 50px 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 8px; cursor: pointer;
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 8px; cursor: grab;
+            transition: transform 1.2s cubic-bezier(0.23, 1, 0.32, 1), opacity 1s;
         }
-        .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+        .stacked-photo:active { cursor: grabbing; }
+        .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; pointer-events: none; }
         .photo-caption { position: absolute; bottom: 12px; left: 0; width: 100%; text-align: center; font-size: 11px; font-weight: 700; color: #f43f5e; }
-        .photo-out { transform: translate(160%, -20%) rotate(35deg) scale(0.5) !important; opacity: 0; pointer-events: none; }
+        .photo-out { transform: translate(180%, -30%) rotate(45deg) scale(0.2) !important; opacity: 0; pointer-events: none; }
         #btn-area { position: relative; width: 100%; height: 280px; margin-top: 1rem; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         #yes-btn { z-index: 100; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #no-btn { background-color: #e2e8f0; color: #475569; transition: left 0.3s ease-out, top 0.3s ease-out; position: absolute; z-index: 40; }
@@ -118,11 +119,10 @@
                     
                     if (playPromise !== undefined) {
                         playPromise.then(() => {
-                            // ปรับให้ Fade-in นานขึ้นเป็นประมาณ 8 วินาที
                             let vol = 0;
                             const targetVol = 0.6;
-                            const duration = 8000; // 8 seconds
-                            const intervalTime = 200; // update every 200ms
+                            const duration = 8000;
+                            const intervalTime = 200;
                             const step = targetVol / (duration / intervalTime);
 
                             const fadeInterval = setInterval(() => {
@@ -234,24 +234,42 @@
                 div.className = 'stacked-photo'; div.style.zIndex = count - i;
                 div.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg) translateY(${i*-1}px)`;
                 div.innerHTML = `<img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/200x260/f8fafc/f43f5e?text=${type}+${i+1}'"><div class="photo-caption">${caps[i]}</div>`;
-                div.onclick = function() {
-                    this.classList.add('photo-out'); rem--;
-                    if(rem === 0) setTimeout(() => {
-                        if(type === 'random') { transition('section-random', 'section-food', '#f0fdf4'); generateStack('food', 10, foodCaptions); }
-                        else transition('section-food', 'section-card', '#fff1f2');
-                    }, 600);
-                };
+                
+                // Swipe Logic
+                let startX = 0;
+                div.addEventListener('touchstart', (e) => startX = e.touches[0].clientX);
+                div.addEventListener('touchend', (e) => {
+                    let diff = e.changedTouches[0].clientX - startX;
+                    if (Math.abs(diff) > 50) { 
+                        div.classList.add('photo-out'); rem--;
+                        if(rem === 0) setTimeout(() => {
+                            if(type === 'random') { transition('section-random', 'section-food', '#f0fdf4'); generateStack('food', 10, foodCaptions); }
+                            else transition('section-food', 'section-card', '#fff1f2');
+                        }, 1200);
+                    }
+                });
+                // Fallback for Desktop (Drag slightly)
+                div.addEventListener('mousedown', (e) => startX = e.clientX);
+                div.addEventListener('mouseup', (e) => {
+                    let diff = e.clientX - startX;
+                    if (Math.abs(diff) > 50) {
+                        div.classList.add('photo-out'); rem--;
+                        if(rem === 0) setTimeout(() => {
+                            if(type === 'random') { transition('section-random', 'section-food', '#f0fdf4'); generateStack('food', 10, foodCaptions); }
+                            else transition('section-food', 'section-card', '#fff1f2');
+                        }, 1200);
+                    }
+                });
+
                 container.appendChild(div);
             }
         }
 
         function startTyping() {
-            const lines = ["เย้ ขอให้พี่มีแต่วันที่ดีๆ ทุกวันนะคะ ✨", 
-                           "ขอบคุณที่ทำให้มีความสุขทุกวันๆเลยนะคะ 💖", 
-                           "แล้วก็ให้หนูทำกับข้าวให้กินเยอะๆเลยค่ะ 🍳", 
-                           "ขอให้สุขภาพแข็งแรง ท้องอืดน้อยลงด้วยนะคะ ✌️", 
-                           "ขอบคุณที่เข้าใจ love logic แบบนี้ 💖", 
-                           "ขอให้รักกันเยอะๆแบบนี้ไปเรื่อยๆนะคะ 🥰"];
+            const lines = ["เย้ ขอให้พี่มีแต่วันที่ดีๆ ทุกวันนะคะ ✨ ขอบคุณที่ทำให้มีความสุขทุกวันๆเลยนะคะ 💖", 
+                           "แล้วก็ให้หนูทำกับข้าวให้กินเยอะๆเลยค่ะ 🍳 ขอให้สุขภาพแข็งแรง ท้องอืดน้อยลงด้วยนะคะ ✌️", 
+                           "ขอบคุณที่เข้าใจ love logic แบบนี้ 💖 ขอให้รักกันเยอะๆแบบนี้ไปเรื่อยๆนะคะ 🥰"];
+            
             typeText('type-p1', lines[0], 50, () => {
                 typeText('type-p2', lines[1], 50, () => {
                     typeText('type-p3', lines[2], 50, () => {
