@@ -49,8 +49,8 @@
     </style>
 </head>
 <body>
-    <audio id="bg-music" loop preload="auto">
-        <source src="https://docs.google.com/uc?export=download&id=1wKKyf47WttYuWzTNJW255XDmBVuIXK10" type="audio/mpeg">
+    <audio id="bg-music" loop preload="auto" playsinline>
+        <source src="bg-music.mp3" type="audio/mpeg">
     </audio>
 
     <div id="particles-bg"></div>
@@ -108,14 +108,19 @@
     </div>
 
     <script>
-        // แก้ไข Logic การเล่นเพลง: ใช้ HTML5 Audio
         const music = document.getElementById('bg-music');
 
         function checkCode() {
             if (document.getElementById('passcode').value === '35250*') {
-                // เริ่มเล่นเพลงทันทีเมื่อกด Authorize (เป็นการปลดล็อกโดย User Gesture)
                 if(music) {
-                    music.play().catch(e => console.error("Audio playback failed:", e));
+                    music.volume = 0.5;
+                    const playPromise = music.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            // หากถูกบล็อก ให้รอการคลิกครั้งถัดไปเพื่อเล่นเพลงแน่นอน
+                            document.addEventListener('click', () => { music.play(); }, { once: true });
+                        });
+                    }
                 }
                 transition('section-decoder', 'section-charge');
             } else { 
@@ -123,7 +128,6 @@
             }
         }
 
-        // ส่วนที่เหลือของ Logic เว็บ (คงไว้ตามเดิม)
         let currentStep = 0; let yesScale = 1; let heartCharge = 0;
         const randomCaptions = ["ไปเที่ยวไหนเนี่ย 🚗", "ไปดูโขน ชอบมาก 🎭", "ชอบทะเล 🌊", "ไปซื้อของกินกันเยอะๆ 🛒", "ไปโยนๆหลายๆที่เลย 🎢", "นั่งที่สวนดูผมพี่ 🌳", "ชอบดอกไม้ 🌸", "ไปเที่ยวอีกไหมคะ ✈️", "ไปปั่นจักรยานด้วย 🚲", "ไปกินเนื้อร้านอร่อย 🥩"];
         const foodCaptions = ["ผลไม้เบบี๋ 🍓", "ข้าวอบแซลม่อน 🍱", "เป่าเค้กวันเกิดทำเองนะ 🎂", "ปลาฮอกเกะกับทะเล 🐟", "ชาบูรวมของอร่อย 🍲", "กุ้งดอง แซลมอนแซ่บ 🌶️", "รวมเซตเมนูพุงกาง 😋", "สเต็กเนื้อ ยำม่อน น้ำพริก 🥘", "ตำแตงก็ของโปรด 🥗", "ม่อนดองก็ด้วย อร่อยสุดๆ 🍣"];
