@@ -45,7 +45,7 @@
         #btn-area {
             position: relative;
             width: 100%;
-            height: 300px; /* เพิ่มพื้นที่ให้ขยับหนีสะดวกขึ้น */
+            height: 320px; 
             margin-top: 1rem;
             display: flex;
             flex-direction: column;
@@ -54,7 +54,7 @@
         }
 
         #yes-btn {
-            z-index: 100;
+            z-index: 100; /* ให้ YES อยู่บนสุดเสมอ */
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             white-space: nowrap;
             position: relative;
@@ -67,7 +67,7 @@
             will-change: left, top; 
             font-weight: 600;
             position: absolute;
-            z-index: 50;
+            z-index: 40; /* ให้ NO อยู่ต่ำกว่า YES */
         }
 
         .heart-widget {
@@ -87,7 +87,7 @@
             fill: #f43f5e; 
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .heart-beat-anim { animation: heartPunch 0.4s bounce; }
+        .heart-beat-anim { animation: heartPunch 0.4s; }
         @keyframes heartPunch {
             0% { transform: scale(1); }
             50% { transform: scale(1.15); }
@@ -141,46 +141,14 @@
             </div>
         </div>
 
-        <div id="section-random" class="hidden-section section-fade">
-            <h2 class="text-2xl text-slate-800 mb-2">Memory Stack #01</h2>
-            <p class="text-[10px] text-slate-400 mb-10 font-bold uppercase tracking-widest">Click to reveal next layer</p>
-            <div id="stack-random" class="photo-stack"></div>
-        </div>
-
-        <div id="section-food" class="hidden-section section-fade">
-            <h2 class="text-2xl text-slate-800 mb-2">Memory Stack #02</h2>
-            <p class="text-[10px] text-slate-400 mb-10 font-bold uppercase tracking-widest">Delicious Fragments</p>
-            <div id="stack-food" class="photo-stack"></div>
-        </div>
-
-        <div id="section-card" class="hidden-section section-fade">
-            <div class="text-rose-500 text-3xl mb-6">💌</div>
-            <h3 class="text-3xl text-slate-800 mb-8">Hello, Darling</h3>
-            <div class="space-y-4 text-slate-600 text-lg font-medium italic">
-                <p>"ขอบคุณที่อยู่เคียงข้างกันเสมอมา"</p>
-                <p>"คุณคือ Logic ที่สมบูรณ์แบบที่สุดของ MJ เลยนะ"</p>
-            </div>
-            <button onclick="finalize()" class="mt-12 bg-rose-500 text-white px-12 py-4 rounded-full font-bold shadow-xl animate-bounce">THE END ❤️</button>
-        </div>
-
-        <div id="section-finale" class="hidden-section section-fade">
-            <h1 class="text-4xl text-rose-600 mb-4">MISSION COMPLETE!</h1>
-            <p class="text-slate-400 font-bold tracking-[0.4em] text-xs uppercase">Happy Valentine's Day</p>
-            <div class="text-8xl mt-12">🥰</div>
-        </div>
+        <div id="section-random" class="hidden-section section-fade"><h2 class="text-2xl text-slate-800 mb-2">Memory Stack #01</h2><p class="text-[10px] text-slate-400 mb-10 font-bold uppercase tracking-widest">Click to reveal next layer</p><div id="stack-random" class="photo-stack"></div></div>
+        <div id="section-food" class="hidden-section section-fade"><h2 class="text-2xl text-slate-800 mb-2">Memory Stack #02</h2><p class="text-[10px] text-slate-400 mb-10 font-bold uppercase tracking-widest">Delicious Fragments</p><div id="stack-food" class="photo-stack"></div></div>
+        <div id="section-card" class="hidden-section section-fade"><div class="text-rose-500 text-3xl mb-6">💌</div><h3 class="text-3xl text-slate-800 mb-8">Hello, Darling</h3><div class="space-y-4 text-slate-600 text-lg font-medium italic"><p>"ขอบคุณที่อยู่เคียงข้างกันเสมอมา"</p><p>"คุณคือ Logic ที่สมบูรณ์แบบที่สุดของ MJ เลยนะ"</p></div><button onclick="finalize()" class="mt-12 bg-rose-500 text-white px-12 py-4 rounded-full font-bold shadow-xl animate-bounce">THE END ❤️</button></div>
+        <div id="section-finale" class="hidden-section section-fade"><h1 class="text-4xl text-rose-600 mb-4">MISSION COMPLETE!</h1><p class="text-slate-400 font-bold tracking-[0.4em] text-xs uppercase">Happy Valentine's Day</p><div class="text-8xl mt-12">🥰</div></div>
     </div>
 
     <script>
-        const questions = [
-            "Ready for the memory test?",
-            "Will you answer with your heart?",
-            "Do you like this MJ-Lab project?",
-            "Excited for the surprise?",
-            "Should we celebrate today together?",
-            "Are you prepared for the next phase?",
-            "Almost there... ready?",
-            "Will you be my Valentine?"
-        ];
+        const questions = ["Ready for the memory test?", "Will you answer with your heart?", "Do you like this MJ-Lab project?", "Excited for the surprise?", "Should we celebrate today together?", "Are you prepared for the next phase?", "Almost there... ready?", "Will you be my Valentine?"];
         const randomCaptions = ["Happy Day", "Cute Smile", "Our Secret", "Together", "Funny Time", "Sweet Moment", "Always You", "Perfect View", "Best Trip", "Heart"];
         const foodCaptions = ["Delicious!", "First Date", "Sweet Treats", "Yummy!", "Dinner Time", "Our Favorite", "Happy Meal", "Tasty!", "Lunch Date", "Hungry MJ"];
         
@@ -193,12 +161,9 @@
             const icons = ['❤️', '💖', '✨', '🌸', '☁️'];
             for(let i=0; i<20; i++) {
                 const p = document.createElement('div');
-                p.className = 'particle';
-                p.innerText = icons[Math.floor(Math.random()*icons.length)];
-                p.style.left = Math.random() * 100 + 'vw';
-                p.style.fontSize = (Math.random() * 20 + 10) + 'px';
-                p.style.animationDelay = (Math.random() * 8) + 's';
-                container.appendChild(p);
+                p.className = 'particle'; p.innerText = icons[Math.floor(Math.random()*icons.length)];
+                p.style.left = Math.random() * 100 + 'vw'; p.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                p.style.animationDelay = (Math.random() * 8) + 's'; container.appendChild(p);
             }
         }
         createParticles();
@@ -222,31 +187,23 @@
                 const chargeText = document.getElementById('charge-percent');
                 const nextBtn = document.getElementById('charge-next-btn');
                 const heartWidget = document.querySelector('.heart-widget');
-
-                const newY = 32 - (32 * (heartCharge / 100));
-                fillRect.setAttribute('y', newY);
+                fillRect.setAttribute('y', 32 - (32 * (heartCharge / 100)));
                 chargeText.innerText = `${heartCharge}%`;
                 chargeText.style.color = `rgba(244, 63, 94, ${0.3 + (heartCharge/100)})`;
-
                 heartWidget.classList.remove('heart-beat-anim');
                 void heartWidget.offsetWidth;
                 heartWidget.classList.add('heart-beat-anim');
-
                 if (heartCharge === 100) {
                     confetti({ particleCount: 50, spread: 80, origin: { y: 0.6 }, colors: ['#f43f5e'] });
                     nextBtn.disabled = false;
                     nextBtn.innerText = "Authorize Access";
                     nextBtn.classList.remove('bg-slate-200', 'text-slate-400', 'cursor-not-allowed');
                     nextBtn.classList.add('bg-slate-900', 'text-white', 'hover:bg-slate-800');
-                    chargeText.classList.add('text-rose-600', 'scale-110');
                 }
             }
         }
 
-        function goToQuestions() {
-            transition('section-charge', 'section-questions', '#fff1f2');
-            updateQuestion();
-        }
+        function goToQuestions() { transition('section-charge', 'section-questions', '#fff1f2'); updateQuestion(); }
 
         function updateQuestion() {
             if (currentStep < questions.length) {
@@ -269,10 +226,7 @@
             yesScale = 1;
             const yesBtn = document.getElementById('yes-btn');
             const noBtn = document.getElementById('no-btn');
-            
             yesBtn.style.transform = `scale(${yesScale})`;
-            
-            // เริ่มต้น: ปุ่ม NO อยู่ด้านล่าง YES
             noBtn.style.position = "static";
             noBtn.style.marginTop = "20px";
             noBtn.style.left = "auto";
@@ -284,35 +238,40 @@
         const btnArea = document.getElementById('btn-area');
 
         noBtn.addEventListener('mouseover', function() {
-            yesScale += 0.2;
-            yesBtn.style.transform = `scale(${yesScale})`;
+            // จำกัดขนาด YES สูงสุดที่ 2.0
+            if (yesScale < 2.0) {
+                yesScale += 0.15;
+                yesBtn.style.transform = `scale(${yesScale})`;
+            }
 
             const areaRect = btnArea.getBoundingClientRect();
             const yesRect = yesBtn.getBoundingClientRect();
-            const btnWidth = noBtn.offsetWidth;
-            const btnHeight = noBtn.offsetHeight;
+            const btnW = noBtn.offsetWidth;
+            const btnH = noBtn.offsetHeight;
 
             let newX, newY, isOverlapping;
+            let attempts = 0;
             
-            // วนลูปจนกว่าจะได้พิกัดที่ไม่ทับซ้อนกับปุ่ม YES
             do {
-                newX = Math.random() * (areaRect.width - btnWidth);
-                newY = Math.random() * (areaRect.height - btnHeight);
+                newX = Math.random() * (areaRect.width - btnW);
+                newY = Math.random() * (areaRect.height - btnH);
                 
-                // คำนวณขอบเขตของตำแหน่งใหม่ของปุ่ม NO สัมพัทธ์กับหน้าจอ
-                const noNextRect = {
+                const noR = {
                     left: areaRect.left + newX,
-                    right: areaRect.left + newX + btnWidth,
+                    right: areaRect.left + newX + btnW,
                     top: areaRect.top + newY,
-                    bottom: areaRect.top + newY + btnHeight
+                    bottom: areaRect.top + newY + btnH
                 };
 
-                // ตรวจสอบว่าทับกับ YES หรือไม่ (เพิ่ม Buffer 20px เพื่อความชัวร์)
-                isOverlapping = !(noNextRect.right < yesRect.left - 20 || 
-                                  noNextRect.left > yesRect.right + 20 || 
-                                  noNextRect.bottom < yesRect.top - 20 || 
-                                  noNextRect.top > yesRect.bottom + 20);
-                                  
+                // เช็กทับซ้อน (มีระยะห่าง 10px)
+                isOverlapping = !(noR.right < yesRect.left - 10 || 
+                                  noR.left > yesRect.right + 10 || 
+                                  noR.bottom < yesRect.top - 10 || 
+                                  noR.top > yesRect.bottom + 10);
+                attempts++;
+                // ถ้าสุ่มเกิน 20 ครั้งแล้วยังทับ (กรณี YES ใหญ่มาก) ให้ข้ามการเช็กไปเลยแต่เน้นจุดขอบๆ
+                if(attempts > 20) { isOverlapping = false; }
+
             } while (isOverlapping);
 
             noBtn.style.position = "absolute";
@@ -323,26 +282,18 @@
 
         function generateStack(type, count, captions) {
             const container = document.getElementById(type === 'random' ? 'stack-random' : 'stack-food');
-            container.innerHTML = '';
-            let remaining = count;
+            container.innerHTML = ''; let remaining = count;
             for(let i = 0; i < count; i++) {
                 const div = document.createElement('div');
-                div.className = 'stacked-photo';
-                div.style.zIndex = count - i;
+                div.className = 'stacked-photo'; div.style.zIndex = count - i;
                 div.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg) translateY(${i*-1}px)`;
                 div.innerHTML = `<img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/300x400/f8fafc/f43f5e?text=${type}+${i+1}'"><div class="photo-caption">${captions[i]}</div>`;
                 div.onclick = function(e) {
-                    e.stopPropagation();
-                    this.classList.add('photo-out');
-                    remaining--;
+                    e.stopPropagation(); this.classList.add('photo-out'); remaining--;
                     if(remaining === 0) {
                         setTimeout(() => {
-                            if(type === 'random') {
-                                transition('section-random', 'section-food', '#f0fdf4');
-                                generateStack('food', 10, foodCaptions);
-                            } else {
-                                transition('section-food', 'section-card', '#fff1f2');
-                            }
+                            if(type === 'random') { transition('section-random', 'section-food', '#f0fdf4'); generateStack('food', 10, foodCaptions); }
+                            else { transition('section-food', 'section-card', '#fff1f2'); }
                         }, 800);
                     }
                 };
