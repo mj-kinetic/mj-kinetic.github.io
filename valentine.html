@@ -15,7 +15,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             transition: background-color 1.2s ease;
         }
-        h1, h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; font-weight: 800; }
         
         .particle {
             position: absolute; pointer-events: none;
@@ -25,6 +25,20 @@
             0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
             50% { opacity: 0.6; }
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Heart Pulse Animation */
+        .heart-beat {
+            animation: heartbeat 1.2s infinite;
+            cursor: pointer;
+            transition: transform 0.1s active;
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.15); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         .photo-stack { position: relative; width: 280px; height: 350px; margin: 0 auto; z-index: 10; }
@@ -42,11 +56,10 @@
         }
         .photo-out { transform: translate(160%, -20%) rotate(35deg) scale(0.5) !important; opacity: 0; pointer-events: none; }
 
-        /* จัดระเบียบพื้นที่ปุ่ม */
         #btn-area {
             position: relative;
             width: 100%;
-            height: 250px; /* เพิ่มพื้นที่ให้ปุ่ม YES ขยายได้ */
+            height: 250px;
             margin-top: 1rem;
             display: flex;
             justify-content: center;
@@ -87,6 +100,21 @@
             <p class="text-slate-400 text-[11px] mb-8 font-bold uppercase tracking-widest">MJ-Lab Security Protocol</p>
             <input type="text" id="passcode" placeholder="----" maxlength="4" class="bg-slate-100 border-none rounded-xl px-4 py-4 text-center text-rose-500 text-3xl font-bold tracking-[0.6em] focus:ring-2 focus:ring-rose-300 w-full mb-8">
             <button onclick="checkCode()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition-all uppercase text-sm tracking-widest">Authorize Access</button>
+        </div>
+
+        <div id="section-charge" class="hidden-section section-fade">
+            <h2 class="text-2xl text-slate-700 mb-2">Before we begin...</h2>
+            <p class="text-slate-500 text-sm mb-8">ใน 100% คุณรักฉันกี่ % คะ?</p>
+            
+            <div class="relative flex justify-center mb-8">
+                <div id="big-heart" onclick="chargeHeart()" class="text-8xl heart-beat active:scale-90 transition-transform">❤️</div>
+            </div>
+
+            <div class="w-full bg-slate-100 rounded-full h-4 mb-4 overflow-hidden">
+                <div id="charge-bar" class="bg-rose-500 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <p id="charge-text" class="text-rose-600 font-black text-2xl italic">0%</p>
+            <p class="text-slate-400 text-[10px] mt-4 uppercase tracking-widest">Tap the heart to charge energy</p>
         </div>
 
         <div id="section-questions" class="hidden-section section-fade">
@@ -144,8 +172,10 @@
         const foodCaptions = ["Delicious!", "First Date", "Sweet Treats", "Yummy!", "Dinner Time", "Our Favorite", "Happy Meal", "Tasty!", "Lunch Date", "Hungry MJ"];
         
         let currentStep = 0;
-        let yesScale = 1; // ตัวแปรเก็บขนาดของปุ่ม YES
+        let yesScale = 1;
+        let lovePercent = 0;
 
+        // 1. Particle Background
         function createParticles() {
             const container = document.getElementById('particles-bg');
             const icons = ['❤️', '💖', '✨', '🌸', '☁️'];
@@ -167,11 +197,36 @@
             if(bgColor) document.body.style.backgroundColor = bgColor;
         }
 
+        // Check Passcode
         function checkCode() {
             if (document.getElementById('passcode').value === '1402') {
-                transition('section-decoder', 'section-questions', '#fff1f2');
-                updateQuestion();
+                transition('section-decoder', 'section-charge', '#fff1f2');
+                document.getElementById('display-icon').innerText = '⚡';
             } else { alert("Code is 1402"); }
+        }
+
+        // Charge Heart Logic
+        function chargeHeart() {
+            if (lovePercent < 100) {
+                lovePercent += 5; // เพิ่มทีละ 5% (คลิก 20 ครั้ง)
+                if (lovePercent > 100) lovePercent = 100;
+                
+                document.getElementById('charge-bar').style.width = lovePercent + '%';
+                document.getElementById('charge-text').innerText = lovePercent + '%';
+                
+                // หัวใจขยายตามเปอร์เซ็นต์
+                const heart = document.getElementById('big-heart');
+                heart.style.transform = `scale(${1 + (lovePercent/200)})`;
+                
+                if (lovePercent === 100) {
+                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                    setTimeout(() => {
+                        transition('section-charge', 'section-questions', '#fff1f2');
+                        document.getElementById('display-icon').innerText = '💖';
+                        updateQuestion();
+                    }, 1500);
+                }
+            }
         }
 
         function updateQuestion() {
@@ -181,6 +236,7 @@
                 resetButtons();
             } else {
                 transition('section-questions', 'section-random', '#fafaf9');
+                document.getElementById('display-icon').innerText = '📸';
                 generateStack('random', 10, randomCaptions);
             }
         }
@@ -192,30 +248,26 @@
         }
 
         function resetButtons() {
-            // รีเซ็ตขนาดปุ่ม YES
             yesScale = 1;
             const yesBtn = document.getElementById('yes-btn');
             yesBtn.style.transform = `scale(${yesScale})`;
             
-            // รีเซ็ตตำแหน่งปุ่ม NO
             const noBtn = document.getElementById('no-btn');
             noBtn.style.position = "relative";
             noBtn.style.left = "auto";
             noBtn.style.top = "auto";
-            noBtn.style.marginRight = "-100px"; // ให้ห่างจากปุ่ม YES นิดหน่อยตอนเริ่ม
+            noBtn.style.marginRight = "-100px";
         }
 
-        // Logic ปุ่ม NO หนี และปุ่ม YES ใหญ่ขึ้น
+        // NO Button Logic (Escape & Grow YES)
         const noBtn = document.getElementById('no-btn');
         const yesBtn = document.getElementById('yes-btn');
         const btnArea = document.getElementById('btn-area');
 
         noBtn.addEventListener('mouseover', function() {
-            // 1. ทำให้ปุ่ม YES ใหญ่ขึ้นครั้งละ 0.2 (20%)
             yesScale += 0.2;
             yesBtn.style.transform = `scale(${yesScale})`;
 
-            // 2. ทำให้ปุ่ม NO วิ่งหนี
             const containerWidth = btnArea.clientWidth;
             const containerHeight = btnArea.clientHeight;
             const btnWidth = noBtn.offsetWidth;
@@ -254,9 +306,11 @@
                         setTimeout(() => {
                             if(type === 'random') {
                                 transition('section-random', 'section-food', '#f0fdf4');
+                                document.getElementById('display-icon').innerText = '🍱';
                                 generateStack('food', 10, foodCaptions);
                             } else {
                                 transition('section-food', 'section-card', '#fff1f2');
+                                document.getElementById('display-icon').innerText = '💌';
                             }
                         }, 800);
                     }
@@ -267,6 +321,7 @@
 
         function finalize() {
             transition('section-card', 'section-finale');
+            document.getElementById('display-icon').innerText = '👑';
             const end = Date.now() + 10000;
             (function frame() {
                 confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.8 } });
