@@ -31,9 +31,16 @@
             background: white; padding: 10px 10px 50px 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 8px; cursor: grab;
             transition: transform 1.2s cubic-bezier(0.23, 1, 0.32, 1), opacity 1s;
+            /* ป้องกันการลากรูปเริ่มต้นของ Browser */
+            user-select: none;
+            -webkit-user-drag: none;
         }
         .stacked-photo:active { cursor: grabbing; }
-        .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; pointer-events: none; }
+        .stacked-photo img { 
+            width: 100%; height: 100%; object-fit: cover; border-radius: 4px; 
+            pointer-events: none; /* ป้องกันการเลือกรูป */
+            -webkit-user-drag: none;
+        }
         .photo-caption { position: absolute; bottom: 12px; left: 0; width: 100%; text-align: center; font-size: 11px; font-weight: 700; color: #f43f5e; }
         .photo-out { transform: translate(180%, -30%) rotate(45deg) scale(0.2) !important; opacity: 0; pointer-events: none; }
         #btn-area { position: relative; width: 100%; height: 280px; margin-top: 1rem; display: flex; flex-direction: column; justify-content: center; align-items: center; }
@@ -47,7 +54,6 @@
         input[type="text"] { font-size: 16px !important; }
         .typing::after { content: '|'; animation: blink 0.7s infinite; color: #f43f5e; }
         @keyframes blink { 50% { opacity: 0; } }
-        /* สไตล์ข้อความบอกให้สไลด์ */
         .swipe-instruction {
             font-size: 10px;
             color: #fb7185;
@@ -259,6 +265,9 @@
                 div.innerHTML = `<img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/200x260/f8fafc/f43f5e?text=${type}+${i+1}'"><div class="photo-caption">${caps[i]}</div>`;
                 
                 let startX = 0;
+                let isDragging = false;
+
+                // สำหรับ Mobile (Touch)
                 div.addEventListener('touchstart', (e) => startX = e.touches[0].clientX);
                 div.addEventListener('touchend', (e) => {
                     let diff = e.changedTouches[0].clientX - startX;
@@ -270,8 +279,17 @@
                         }, 1200);
                     }
                 });
-                div.addEventListener('mousedown', (e) => startX = e.clientX);
-                div.addEventListener('mouseup', (e) => {
+
+                // สำหรับ PC (Mouse Drag)
+                div.addEventListener('mousedown', (e) => {
+                    e.preventDefault(); // ป้องกัน Browser ลากรูป
+                    startX = e.clientX;
+                    isDragging = true;
+                });
+
+                window.addEventListener('mouseup', (e) => {
+                    if (!isDragging) return;
+                    isDragging = false;
                     let diff = e.clientX - startX;
                     if (Math.abs(diff) > 50) {
                         div.classList.add('photo-out'); rem--;
