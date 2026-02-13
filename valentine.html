@@ -44,11 +44,33 @@
         }
         .photo-out { transform: translate(160%, -20%) rotate(35deg) scale(0.5) !important; opacity: 0; pointer-events: none; }
 
-        /* NO Button Style & Smooth Move */
+        /* NO Button Style & Container Fix */
+        #btn-area {
+            position: relative;
+            width: 100%;
+            height: 180px; /* กำหนดความสูงที่แน่นอนเพื่อให้ปุ่ม NO มีพื้นที่วิ่ง */
+            margin-top: 2rem;
+        }
+
         #no-btn {
-            background-color: #e2e8f0; color: #475569;
-            transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-            will-change: transform; font-weight: 600;
+            background-color: #e2e8f0; 
+            color: #475569;
+            transition: left 0.3s ease-out, top 0.3s ease-out; /* ปรับให้วิ่งนุ่มนวล */
+            will-change: left, top; 
+            font-weight: 600;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 20px;
+            white-space: nowrap;
+        }
+
+        .yes-btn {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            z-index: 20;
         }
 
         .hidden-section { display: none; }
@@ -75,8 +97,8 @@
             <p id="status-msg" class="text-[10px] text-rose-500 font-bold mb-6 tracking-widest uppercase"></p>
             <h2 id="question-text" class="text-2xl text-slate-700 min-h-[5rem] flex items-center justify-center px-4 font-bold tracking-tight"></h2>
             
-            <div id="btn-area" class="flex flex-col items-center gap-6 mt-10 relative min-h-[160px]">
-                <button onclick="handleYes()" class="bg-rose-500 text-white px-20 py-4 rounded-full text-lg shadow-xl shadow-rose-100 hover:bg-rose-600 active:scale-95 transition-all font-bold">YES</button>
+            <div id="btn-area">
+                <button onclick="handleYes()" class="yes-btn bg-rose-500 text-white px-20 py-4 rounded-full text-lg shadow-xl shadow-rose-100 hover:bg-rose-600 active:scale-95 transition-all font-bold">YES</button>
                 <button id="no-btn" class="px-14 py-3 rounded-full text-md">NO</button>
             </div>
         </div>
@@ -176,31 +198,33 @@
 
         function resetNoBtn() {
             const btn = document.getElementById('no-btn');
-            btn.style.position = "static";
-            btn.style.transform = "none";
+            btn.style.left = "50%";
+            btn.style.top = "auto";
+            btn.style.bottom = "20px";
+            btn.style.transform = "translateX(-50%)";
         }
 
-        // 3. NO Button: LIMITED RANGE Logic (จะไม่วิ่งไปไกลเกินกล่อง)
-        document.getElementById('no-btn').addEventListener('mouseover', function() {
-            this.style.position = "fixed";
-            const box = document.getElementById('main-container').getBoundingClientRect();
-            
-            // จำกัดระยะวิ่งให้อยู่ในกรอบ 150px รอบกล่องกลาง
-            const range = 150;
-            const minX = box.left - range;
-            const maxX = box.right + range - 100;
-            const minY = box.top - range;
-            const maxY = box.bottom + range - 40;
+        // 3. NO Button: Restricted Movement within #btn-area
+        const noBtn = document.getElementById('no-btn');
+        const btnArea = document.getElementById('btn-area');
 
-            const newX = Math.random() * (maxX - minX) + minX;
-            const newY = Math.random() * (maxY - minY) + minY;
+        noBtn.addEventListener('mouseover', function() {
+            const containerWidth = btnArea.clientWidth;
+            const containerHeight = btnArea.clientHeight;
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
 
-            this.style.left = '0px';
-            this.style.top = '0px';
-            this.style.transform = `translate(${newX}px, ${newY}px)`;
+            // สุ่มตำแหน่งใหม่ภายในขอบเขตของ btn-area เท่านั้น
+            const newX = Math.random() * (containerWidth - btnWidth);
+            const newY = Math.random() * (containerHeight - btnHeight);
+
+            noBtn.style.left = `${newX}px`;
+            noBtn.style.top = `${newY}px`;
+            noBtn.style.bottom = "auto";
+            noBtn.style.transform = "none";
         });
 
-        // 4. Photo Stack Logic (Fix Click)
+        // 4. Photo Stack Logic
         function generateStack(type, count, captions) {
             const container = document.getElementById(type === 'random' ? 'stack-random' : 'stack-food');
             container.innerHTML = '';
@@ -210,7 +234,6 @@
                 const div = document.createElement('div');
                 div.className = 'stacked-photo';
                 div.style.zIndex = count - i;
-                // กระจายรูปให้เอียงสวยงาม
                 div.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg) translateY(${i*-1}px)`;
                 
                 div.innerHTML = `
@@ -219,7 +242,7 @@
                 `;
                 
                 div.onclick = function(e) {
-                    e.stopPropagation(); // ป้องกันการคลิกซ้อน
+                    e.stopPropagation();
                     this.classList.add('photo-out');
                     remaining--;
                     if(remaining === 0) {
