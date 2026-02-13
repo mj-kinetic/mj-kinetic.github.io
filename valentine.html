@@ -15,7 +15,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             transition: background-color 1.2s ease;
         }
-        h1, h2, h3 { font-family: 'Montserrat', sans-serif; font-weight: 800; }
+        h1, h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; }
         
         .particle {
             position: absolute; pointer-events: none;
@@ -25,20 +25,6 @@
             0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
             50% { opacity: 0.6; }
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-        }
-
-        /* Heart Pulse Animation */
-        .heart-beat {
-            animation: heartbeat 1.2s infinite;
-            cursor: pointer;
-            transition: transform 0.1s active;
-        }
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            15% { transform: scale(1.15); }
-            30% { transform: scale(1); }
-            45% { transform: scale(1.1); }
-            100% { transform: scale(1); }
         }
 
         .photo-stack { position: relative; width: 280px; height: 350px; margin: 0 auto; z-index: 10; }
@@ -82,6 +68,40 @@
             z-index: 50;
         }
 
+        /* Heart Charge Style */
+        .heart-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            cursor: pointer;
+            user-select: none;
+        }
+        .heart-outline {
+            font-size: 100px;
+            color: #e2e8f0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .heart-fill {
+            font-size: 100px;
+            color: #f43f5e;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            clip-path: inset(100% 0 0 0);
+            transition: clip-path 0.3s ease;
+        }
+        .heart-beat { animation: heartScale 0.3s ease; }
+        @keyframes heartScale { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
         .hidden-section { display: none; }
         .section-fade { animation: fadeIn 0.8s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
@@ -103,18 +123,17 @@
         </div>
 
         <div id="section-charge" class="hidden-section section-fade">
-            <h2 class="text-2xl text-slate-700 mb-2">Before we begin...</h2>
-            <p class="text-slate-500 text-sm mb-8">ใน 100% คุณรักฉันกี่ % คะ?</p>
+            <h2 class="text-2xl text-slate-800 mb-4 px-4">ก่อนไปเล่นเกมตอบคำถาม logic นี้...</h2>
+            <p class="text-rose-500 font-bold mb-8 uppercase tracking-widest text-sm">ใน 100% รักฉันกี่ %?</p>
             
-            <div class="relative flex justify-center mb-8">
-                <div id="big-heart" onclick="chargeHeart()" class="text-8xl heart-beat active:scale-90 transition-transform">❤️</div>
+            <div class="heart-container mb-6" onclick="chargeHeart()">
+                <div class="heart-outline">❤️</div>
+                <div id="heart-fill" class="heart-fill">❤️</div>
             </div>
-
-            <div class="w-full bg-slate-100 rounded-full h-4 mb-4 overflow-hidden">
-                <div id="charge-bar" class="bg-rose-500 h-full transition-all duration-300" style="width: 0%"></div>
-            </div>
-            <p id="charge-text" class="text-rose-600 font-black text-2xl italic">0%</p>
-            <p class="text-slate-400 text-[10px] mt-4 uppercase tracking-widest">Tap the heart to charge energy</p>
+            
+            <div id="charge-percent" class="text-3xl font-black text-slate-800 mb-8">0%</div>
+            
+            <button id="charge-next-btn" onclick="goToQuestions()" class="w-full bg-slate-200 text-slate-400 py-4 rounded-xl font-bold uppercase text-sm tracking-widest cursor-not-allowed transition-all" disabled>Access Denied</button>
         </div>
 
         <div id="section-questions" class="hidden-section section-fade">
@@ -173,9 +192,8 @@
         
         let currentStep = 0;
         let yesScale = 1;
-        let lovePercent = 0;
+        let heartCharge = 0; // ตัวแปรเก็บค่าเปอร์เซ็นต์หัวใจ
 
-        // 1. Particle Background
         function createParticles() {
             const container = document.getElementById('particles-bg');
             const icons = ['❤️', '💖', '✨', '🌸', '☁️'];
@@ -197,36 +215,43 @@
             if(bgColor) document.body.style.backgroundColor = bgColor;
         }
 
-        // Check Passcode
         function checkCode() {
             if (document.getElementById('passcode').value === '1402') {
                 transition('section-decoder', 'section-charge', '#fff1f2');
-                document.getElementById('display-icon').innerText = '⚡';
             } else { alert("Code is 1402"); }
         }
 
-        // Charge Heart Logic
+        // Logic สำหรับ Charge Heart
         function chargeHeart() {
-            if (lovePercent < 100) {
-                lovePercent += 5; // เพิ่มทีละ 5% (คลิก 20 ครั้ง)
-                if (lovePercent > 100) lovePercent = 100;
+            if (heartCharge < 100) {
+                heartCharge += 10;
+                const heartFill = document.getElementById('heart-fill');
+                const chargeText = document.getElementById('charge-percent');
+                const nextBtn = document.getElementById('charge-next-btn');
+
+                // ปรับระดับสีที่เติมในหัวใจ
+                heartFill.style.clipPath = `inset(${100 - heartCharge}% 0 0 0)`;
+                chargeText.innerText = `${heartCharge}%`;
                 
-                document.getElementById('charge-bar').style.width = lovePercent + '%';
-                document.getElementById('charge-text').innerText = lovePercent + '%';
-                
-                // หัวใจขยายตามเปอร์เซ็นต์
-                const heart = document.getElementById('big-heart');
-                heart.style.transform = `scale(${1 + (lovePercent/200)})`;
-                
-                if (lovePercent === 100) {
-                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                    setTimeout(() => {
-                        transition('section-charge', 'section-questions', '#fff1f2');
-                        document.getElementById('display-icon').innerText = '💖';
-                        updateQuestion();
-                    }, 1500);
+                // ใส่เอฟเฟกต์หัวใจเต้น
+                heartFill.parentElement.classList.remove('heart-beat');
+                void heartFill.parentElement.offsetWidth; // trigger reflow
+                heartFill.parentElement.classList.add('heart-beat');
+
+                if (heartCharge === 100) {
+                    confetti({ particleCount: 40, spread: 70, origin: { y: 0.7 } });
+                    nextBtn.disabled = false;
+                    nextBtn.innerText = "Access Authorized";
+                    nextBtn.classList.remove('bg-slate-200', 'text-slate-400', 'cursor-not-allowed');
+                    nextBtn.classList.add('bg-rose-500', 'text-white', 'hover:bg-rose-600');
+                    chargeText.classList.add('text-rose-500');
                 }
             }
+        }
+
+        function goToQuestions() {
+            transition('section-charge', 'section-questions', '#fff1f2');
+            updateQuestion();
         }
 
         function updateQuestion() {
@@ -236,7 +261,6 @@
                 resetButtons();
             } else {
                 transition('section-questions', 'section-random', '#fafaf9');
-                document.getElementById('display-icon').innerText = '📸';
                 generateStack('random', 10, randomCaptions);
             }
         }
@@ -259,7 +283,6 @@
             noBtn.style.marginRight = "-100px";
         }
 
-        // NO Button Logic (Escape & Grow YES)
         const noBtn = document.getElementById('no-btn');
         const yesBtn = document.getElementById('yes-btn');
         const btnArea = document.getElementById('btn-area');
@@ -306,11 +329,9 @@
                         setTimeout(() => {
                             if(type === 'random') {
                                 transition('section-random', 'section-food', '#f0fdf4');
-                                document.getElementById('display-icon').innerText = '🍱';
                                 generateStack('food', 10, foodCaptions);
                             } else {
                                 transition('section-food', 'section-card', '#fff1f2');
-                                document.getElementById('display-icon').innerText = '💌';
                             }
                         }, 800);
                     }
@@ -321,7 +342,6 @@
 
         function finalize() {
             transition('section-card', 'section-finale');
-            document.getElementById('display-icon').innerText = '👑';
             const end = Date.now() + 10000;
             (function frame() {
                 confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.8 } });
