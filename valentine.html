@@ -45,9 +45,10 @@
         #btn-area {
             position: relative;
             width: 100%;
-            height: 250px;
+            height: 300px; /* เพิ่มพื้นที่ให้ขยับหนีสะดวกขึ้น */
             margin-top: 1rem;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
         }
@@ -56,6 +57,7 @@
             z-index: 100;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             white-space: nowrap;
+            position: relative;
         }
 
         #no-btn {
@@ -68,7 +70,6 @@
             z-index: 50;
         }
 
-        /* --- New Heart Charge Style --- */
         .heart-widget {
             position: relative;
             width: 150px;
@@ -81,7 +82,7 @@
             height: 100%;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
         }
-        .heart-bg { fill: #f1f5f9; } /* สีหัวใจตอนว่างเปล่า */
+        .heart-bg { fill: #f1f5f9; }
         .heart-fill-path { 
             fill: #f43f5e; 
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -92,7 +93,6 @@
             50% { transform: scale(1.15); }
             100% { transform: scale(1); }
         }
-        /* ------------------------------ */
 
         .hidden-section { display: none; }
         .section-fade { animation: fadeIn 0.8s ease-out forwards; }
@@ -117,7 +117,6 @@
         <div id="section-charge" class="hidden-section section-fade">
             <h2 class="text-2xl text-slate-800 mb-4 px-4 font-bold">ก่อนไปเล่นเกมตอบคำถาม logic นี้...</h2>
             <p class="text-rose-500 font-bold mb-8 uppercase tracking-widest text-sm">ใน 100% รักฉันกี่ %?</p>
-            
             <div class="heart-widget mb-6" onclick="chargeHeart()">
                 <svg class="heart-svg" viewBox="0 0 32 32">
                     <defs>
@@ -129,16 +128,13 @@
                     <path class="heart-fill-path" clip-path="url(#heartClip)" d="M16 28.5L14.1 26.6C7.3 20.5 2.8 16.4 2.8 11.4C2.8 7.3 6 4.1 10.1 4.1C12.4 4.1 14.6 5.2 16 7C17.4 5.2 19.6 4.1 21.9 4.1C26 4.1 29.2 7.3 29.2 11.4C29.2 16.4 24.7 20.5 17.9 26.6L16 28.5Z"/>
                 </svg>
             </div>
-            
             <div id="charge-percent" class="text-4xl font-black text-slate-300 mb-8 transition-colors">0%</div>
-            
             <button id="charge-next-btn" onclick="goToQuestions()" class="w-full bg-slate-200 text-slate-400 py-4 rounded-xl font-bold uppercase text-sm tracking-widest cursor-not-allowed transition-all" disabled>กรุณาเติมความรักให้เต็ม</button>
         </div>
 
         <div id="section-questions" class="hidden-section section-fade">
             <p id="status-msg" class="text-[10px] text-rose-500 font-bold mb-6 tracking-widest uppercase"></p>
             <h2 id="question-text" class="text-2xl text-slate-700 min-h-[5rem] flex items-center justify-center px-4 font-bold tracking-tight"></h2>
-            
             <div id="btn-area">
                 <button id="yes-btn" onclick="handleYes()" class="bg-rose-500 text-white px-10 py-4 rounded-full text-lg shadow-xl shadow-rose-100 hover:bg-rose-600 active:scale-95 transition-all font-bold">YES</button>
                 <button id="no-btn" class="px-8 py-3 rounded-full text-md">NO</button>
@@ -172,7 +168,6 @@
             <p class="text-slate-400 font-bold tracking-[0.4em] text-xs uppercase">Happy Valentine's Day</p>
             <div class="text-8xl mt-12">🥰</div>
         </div>
-
     </div>
 
     <script>
@@ -220,7 +215,6 @@
             } else { alert("Code is 1402"); }
         }
 
-        // Logic สำหรับ Charge Heart (SVG Version)
         function chargeHeart() {
             if (heartCharge < 100) {
                 heartCharge += 10;
@@ -229,14 +223,11 @@
                 const nextBtn = document.getElementById('charge-next-btn');
                 const heartWidget = document.querySelector('.heart-widget');
 
-                // คำนวณตำแหน่ง Y ของ ClipPath (32 คือความสูงเต็มของ viewBox)
                 const newY = 32 - (32 * (heartCharge / 100));
                 fillRect.setAttribute('y', newY);
-                
                 chargeText.innerText = `${heartCharge}%`;
                 chargeText.style.color = `rgba(244, 63, 94, ${0.3 + (heartCharge/100)})`;
 
-                // เอฟเฟกต์สั่นเมื่อคลิก
                 heartWidget.classList.remove('heart-beat-anim');
                 void heartWidget.offsetWidth;
                 heartWidget.classList.add('heart-beat-anim');
@@ -277,13 +268,15 @@
         function resetButtons() {
             yesScale = 1;
             const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+            
             yesBtn.style.transform = `scale(${yesScale})`;
             
-            const noBtn = document.getElementById('no-btn');
-            noBtn.style.position = "relative";
+            // เริ่มต้น: ปุ่ม NO อยู่ด้านล่าง YES
+            noBtn.style.position = "static";
+            noBtn.style.marginTop = "20px";
             noBtn.style.left = "auto";
             noBtn.style.top = "auto";
-            noBtn.style.marginRight = "-100px";
         }
 
         const noBtn = document.getElementById('no-btn');
@@ -294,36 +287,50 @@
             yesScale += 0.2;
             yesBtn.style.transform = `scale(${yesScale})`;
 
-            const containerWidth = btnArea.clientWidth;
-            const containerHeight = btnArea.clientHeight;
+            const areaRect = btnArea.getBoundingClientRect();
+            const yesRect = yesBtn.getBoundingClientRect();
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
 
-            const newX = Math.random() * (containerWidth - btnWidth);
-            const newY = Math.random() * (containerHeight - btnHeight);
+            let newX, newY, isOverlapping;
+            
+            // วนลูปจนกว่าจะได้พิกัดที่ไม่ทับซ้อนกับปุ่ม YES
+            do {
+                newX = Math.random() * (areaRect.width - btnWidth);
+                newY = Math.random() * (areaRect.height - btnHeight);
+                
+                // คำนวณขอบเขตของตำแหน่งใหม่ของปุ่ม NO สัมพัทธ์กับหน้าจอ
+                const noNextRect = {
+                    left: areaRect.left + newX,
+                    right: areaRect.left + newX + btnWidth,
+                    top: areaRect.top + newY,
+                    bottom: areaRect.top + newY + btnHeight
+                };
+
+                // ตรวจสอบว่าทับกับ YES หรือไม่ (เพิ่ม Buffer 20px เพื่อความชัวร์)
+                isOverlapping = !(noNextRect.right < yesRect.left - 20 || 
+                                  noNextRect.left > yesRect.right + 20 || 
+                                  noNextRect.bottom < yesRect.top - 20 || 
+                                  noNextRect.top > yesRect.bottom + 20);
+                                  
+            } while (isOverlapping);
 
             noBtn.style.position = "absolute";
+            noBtn.style.marginTop = "0";
             noBtn.style.left = `${newX}px`;
             noBtn.style.top = `${newY}px`;
-            noBtn.style.marginRight = "0";
         });
 
         function generateStack(type, count, captions) {
             const container = document.getElementById(type === 'random' ? 'stack-random' : 'stack-food');
             container.innerHTML = '';
             let remaining = count;
-
             for(let i = 0; i < count; i++) {
                 const div = document.createElement('div');
                 div.className = 'stacked-photo';
                 div.style.zIndex = count - i;
                 div.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg) translateY(${i*-1}px)`;
-                
-                div.innerHTML = `
-                    <img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/300x400/f8fafc/f43f5e?text=${type}+${i+1}'">
-                    <div class="photo-caption">${captions[i]}</div>
-                `;
-                
+                div.innerHTML = `<img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/300x400/f8fafc/f43f5e?text=${type}+${i+1}'"><div class="photo-caption">${captions[i]}</div>`;
                 div.onclick = function(e) {
                     e.stopPropagation();
                     this.classList.add('photo-out');
