@@ -1,22 +1,21 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MJ-Lab | The Perfect Experience</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Itim&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
         body { 
             background-color: #fff1f2; 
             overflow: hidden; 
-            /* ปรับฟอนต์หลักเป็น Itim เพื่อให้ภาษาไทยเป็นตัวเขียนน่ารัก */
-            font-family: 'Itim', cursive;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             transition: background-color 1.2s ease;
         }
-        h1, h2, h3 { font-family: 'Montserrat', sans-serif; font-weight: 800; }
+        h1, h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; }
         
         /* Floating Elements */
         .particle {
@@ -41,8 +40,7 @@
         .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
         .photo-caption {
             position: absolute; bottom: 15px; left: 0; width: 100%;
-            text-align: center; font-size: 14px; font-weight: 700; color: #f43f5e;
-            font-family: 'Itim', cursive;
+            text-align: center; font-size: 12px; font-weight: 700; color: #f43f5e;
         }
         .photo-out { transform: translate(160%, -20%) rotate(35deg) scale(0.5) !important; opacity: 0; pointer-events: none; }
 
@@ -50,14 +48,14 @@
         #btn-area {
             position: relative;
             width: 100%;
-            height: 180px;
+            height: 180px; /* กำหนดความสูงที่แน่นอนเพื่อให้ปุ่ม NO มีพื้นที่วิ่ง */
             margin-top: 2rem;
         }
 
         #no-btn {
             background-color: #e2e8f0; 
             color: #475569;
-            transition: left 0.3s ease-out, top 0.3s ease-out;
+            transition: left 0.3s ease-out, top 0.3s ease-out; /* ปรับให้วิ่งนุ่มนวล */
             will-change: left, top; 
             font-weight: 600;
             position: absolute;
@@ -96,35 +94,35 @@
         </div>
 
         <div id="section-questions" class="hidden-section section-fade">
-            <p id="status-msg" class="text-[11px] text-rose-500 font-bold mb-6 tracking-widest uppercase"></p>
+            <p id="status-msg" class="text-[10px] text-rose-500 font-bold mb-6 tracking-widest uppercase"></p>
             <h2 id="question-text" class="text-2xl text-slate-700 min-h-[5rem] flex items-center justify-center px-4 font-bold tracking-tight"></h2>
             
             <div id="btn-area">
-                <button onclick="handleYes()" class="yes-btn bg-rose-500 text-white px-20 py-4 rounded-full text-lg shadow-xl shadow-rose-100 hover:bg-rose-600 active:scale-95 transition-all font-bold uppercase">ตกลง</button>
-                <button id="no-btn" class="px-14 py-3 rounded-full text-md uppercase">ไม่นะ</button>
+                <button onclick="handleYes()" class="yes-btn bg-rose-500 text-white px-20 py-4 rounded-full text-lg shadow-xl shadow-rose-100 hover:bg-rose-600 active:scale-95 transition-all font-bold">YES</button>
+                <button id="no-btn" class="px-14 py-3 rounded-full text-md">NO</button>
             </div>
         </div>
 
         <div id="section-random" class="hidden-section section-fade">
-            <h2 class="text-2xl text-slate-800 mb-2">ความทรงจำของเรา #01</h2>
-            <p class="text-[11px] text-slate-400 mb-10 font-bold uppercase tracking-widest">จิ้มรูปเพื่อดูรูปถัดไปนะ</p>
+            <h2 class="text-2xl text-slate-800 mb-2">Memory Stack #01</h2>
+            <p class="text-[10px] text-slate-400 mb-10 font-bold uppercase tracking-widest">Click to reveal next layer</p>
             <div id="stack-random" class="photo-stack"></div>
         </div>
 
         <div id="section-food" class="hidden-section section-fade">
-            <h2 class="text-2xl text-slate-800 mb-2">ความทรงจำของเรา #02</h2>
-            <p class="text-[11px] text-slate-400 mb-10 font-bold uppercase tracking-widest">ของอร่อยที่เราไปกินด้วยกัน</p>
+            <h2 class="text-2xl text-slate-800 mb-2">Memory Stack #02</h2>
+            <p class="text-[10px] text-slate-400 mb-10 font-bold uppercase tracking-widest">Delicious Fragments</p>
             <div id="stack-food" class="photo-stack"></div>
         </div>
 
         <div id="section-card" class="hidden-section section-fade">
             <div class="text-rose-500 text-3xl mb-6">💌</div>
-            <h3 class="text-3xl text-slate-800 mb-8">ถึงคนพิเศษของผม</h3>
-            <div class="space-y-4 text-slate-600 text-xl font-medium">
-                <p>"ขอบคุณที่อยู่เคียงข้างกันเสมอมานะ"</p>
-                <p>"คุณคือความสุขที่สมบูรณ์แบบที่สุดเลย"</p>
+            <h3 class="text-3xl text-slate-800 mb-8">Hello, Darling</h3>
+            <div class="space-y-4 text-slate-600 text-lg font-medium italic">
+                <p>"ขอบคุณที่อยู่เคียงข้างกันเสมอมา"</p>
+                <p>"คุณคือ Logic ที่สมบูรณ์แบบที่สุดของ MJ เลยนะ"</p>
             </div>
-            <button onclick="finalize()" class="mt-12 bg-rose-500 text-white px-12 py-4 rounded-full font-bold shadow-xl animate-bounce">จบภารกิจ ❤️</button>
+            <button onclick="finalize()" class="mt-12 bg-rose-500 text-white px-12 py-4 rounded-full font-bold shadow-xl animate-bounce">THE END ❤️</button>
         </div>
 
         <div id="section-finale" class="hidden-section section-fade">
@@ -136,22 +134,22 @@
     </div>
 
     <script>
-        // ปรับเป็นคำถามภาษาไทยให้เข้ากับฟอนต์ลายมือ
         const questions = [
-            "พร้อมที่จะย้อนดูความทรงจำหรือยัง?",
-            "จะตอบคำถามด้วยหัวใจใช่ไหม?",
-            "ชอบโปรเจกต์ที่เราทำให้ไหมเอ่ย?",
-            "ตื่นเต้นกับของขวัญไหม?",
-            "วันนี้เรามาฉลองด้วยกันนะ?",
-            "พร้อมจะไปดูขั้นตอนต่อไปหรือยัง?",
-            "ใกล้ถึงหน้าสุดท้ายแล้วนะ พร้อมนะ?",
-            "เป็นแฟนกับเรานะ?"
+            "Ready for the memory test?",
+            "Will you answer with your heart?",
+            "Do you like this MJ-Lab project?",
+            "Excited for the surprise?",
+            "Should we celebrate today together?",
+            "Are you prepared for the next phase?",
+            "Almost there... ready?",
+            "Will you be my Valentine?"
         ];
-        const randomCaptions = ["วันที่มีความสุข", "ยิ้มหวานๆ", "ความลับของเรา", "อยู่ด้วยกันนะ", "เวลาฮาๆ", "โมเมนต์หวานๆ", "มีแค่เธอเสมอ", "วิวสวยมาก", "ทริปที่ดีที่สุด", "หัวใจ"];
-        const foodCaptions = ["อร่อยมาก!", "เดทแรกของเรา", "ขนมหวานๆ", "ยัมมี่!", "มื้อค่ำสุดพิเศษ", "ของโปรดเราเลย", "มีความสุขตอนกิน", "รสชาติที่ดีที่สุด", "มื้อเที่ยงวันนั้น", "คนหิว 2024"];
+        const randomCaptions = ["Happy Day", "Cute Smile", "Our Secret", "Together", "Funny Time", "Sweet Moment", "Always You", "Perfect View", "Best Trip", "Heart"];
+        const foodCaptions = ["Delicious!", "First Date", "Sweet Treats", "Yummy!", "Dinner Time", "Our Favorite", "Happy Meal", "Tasty!", "Lunch Date", "Hungry MJ"];
         
         let currentStep = 0;
 
+        // 1. Floating Elements logic
         function createParticles() {
             const container = document.getElementById('particles-bg');
             const icons = ['❤️', '💖', '✨', '🌸', '☁️'];
@@ -167,6 +165,7 @@
         }
         createParticles();
 
+        // 2. Transition & Dynamic Background
         function transition(from, to, bgColor) {
             document.getElementById(from).classList.add('hidden-section');
             document.getElementById(to).classList.remove('hidden-section');
@@ -177,12 +176,12 @@
             if (document.getElementById('passcode').value === '1402') {
                 transition('section-decoder', 'section-questions', '#fff1f2');
                 updateQuestion();
-            } else { alert("รหัสผ่านคือ 1402 นะคะ"); }
+            } else { alert("Code is 1402"); }
         }
 
         function updateQuestion() {
             if (currentStep < questions.length) {
-                document.getElementById('status-msg').innerText = `ขั้นตอนที่ ${currentStep + 1} จาก 8`;
+                document.getElementById('status-msg').innerText = `Sequence ${currentStep + 1} of 8`;
                 document.getElementById('question-text').innerText = questions[currentStep];
                 resetNoBtn();
             } else {
@@ -205,6 +204,7 @@
             btn.style.transform = "translateX(-50%)";
         }
 
+        // 3. NO Button: Restricted Movement within #btn-area
         const noBtn = document.getElementById('no-btn');
         const btnArea = document.getElementById('btn-area');
 
@@ -214,6 +214,7 @@
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
 
+            // สุ่มตำแหน่งใหม่ภายในขอบเขตของ btn-area เท่านั้น
             const newX = Math.random() * (containerWidth - btnWidth);
             const newY = Math.random() * (containerHeight - btnHeight);
 
@@ -223,6 +224,7 @@
             noBtn.style.transform = "none";
         });
 
+        // 4. Photo Stack Logic
         function generateStack(type, count, captions) {
             const container = document.getElementById(type === 'random' ? 'stack-random' : 'stack-food');
             container.innerHTML = '';
