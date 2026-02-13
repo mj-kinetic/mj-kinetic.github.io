@@ -17,7 +17,6 @@
         }
         h1, h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; }
         
-        /* Floating Elements */
         .particle {
             position: absolute; pointer-events: none;
             animation: floatUp 8s linear infinite; opacity: 0.3;
@@ -28,7 +27,6 @@
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
 
-        /* Photo Stack & Captions */
         .photo-stack { position: relative; width: 280px; height: 350px; margin: 0 auto; z-index: 10; }
         .stacked-photo {
             position: absolute; width: 100%; height: 100%;
@@ -44,33 +42,31 @@
         }
         .photo-out { transform: translate(160%, -20%) rotate(35deg) scale(0.5) !important; opacity: 0; pointer-events: none; }
 
-        /* NO Button Style & Container Fix */
+        /* จัดระเบียบพื้นที่ปุ่ม */
         #btn-area {
             position: relative;
             width: 100%;
-            height: 180px; /* กำหนดความสูงที่แน่นอนเพื่อให้ปุ่ม NO มีพื้นที่วิ่ง */
-            margin-top: 2rem;
+            height: 250px; /* เพิ่มพื้นที่ให้ปุ่ม YES ขยายได้ */
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #yes-btn {
+            z-index: 100;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            white-space: nowrap;
         }
 
         #no-btn {
             background-color: #e2e8f0; 
             color: #475569;
-            transition: left 0.3s ease-out, top 0.3s ease-out; /* ปรับให้วิ่งนุ่มนวล */
+            transition: left 0.3s ease-out, top 0.3s ease-out;
             will-change: left, top; 
             font-weight: 600;
             position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 20px;
-            white-space: nowrap;
-        }
-
-        .yes-btn {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 0;
-            z-index: 20;
+            z-index: 50;
         }
 
         .hidden-section { display: none; }
@@ -98,8 +94,8 @@
             <h2 id="question-text" class="text-2xl text-slate-700 min-h-[5rem] flex items-center justify-center px-4 font-bold tracking-tight"></h2>
             
             <div id="btn-area">
-                <button onclick="handleYes()" class="yes-btn bg-rose-500 text-white px-20 py-4 rounded-full text-lg shadow-xl shadow-rose-100 hover:bg-rose-600 active:scale-95 transition-all font-bold">YES</button>
-                <button id="no-btn" class="px-14 py-3 rounded-full text-md">NO</button>
+                <button id="yes-btn" onclick="handleYes()" class="bg-rose-500 text-white px-10 py-4 rounded-full text-lg shadow-xl shadow-rose-100 hover:bg-rose-600 active:scale-95 transition-all font-bold">YES</button>
+                <button id="no-btn" class="px-8 py-3 rounded-full text-md">NO</button>
             </div>
         </div>
 
@@ -148,8 +144,8 @@
         const foodCaptions = ["Delicious!", "First Date", "Sweet Treats", "Yummy!", "Dinner Time", "Our Favorite", "Happy Meal", "Tasty!", "Lunch Date", "Hungry MJ"];
         
         let currentStep = 0;
+        let yesScale = 1; // ตัวแปรเก็บขนาดของปุ่ม YES
 
-        // 1. Floating Elements logic
         function createParticles() {
             const container = document.getElementById('particles-bg');
             const icons = ['❤️', '💖', '✨', '🌸', '☁️'];
@@ -165,7 +161,6 @@
         }
         createParticles();
 
-        // 2. Transition & Dynamic Background
         function transition(from, to, bgColor) {
             document.getElementById(from).classList.add('hidden-section');
             document.getElementById(to).classList.remove('hidden-section');
@@ -183,7 +178,7 @@
             if (currentStep < questions.length) {
                 document.getElementById('status-msg').innerText = `Sequence ${currentStep + 1} of 8`;
                 document.getElementById('question-text').innerText = questions[currentStep];
-                resetNoBtn();
+                resetButtons();
             } else {
                 transition('section-questions', 'section-random', '#fafaf9');
                 generateStack('random', 10, randomCaptions);
@@ -196,35 +191,45 @@
             updateQuestion();
         }
 
-        function resetNoBtn() {
-            const btn = document.getElementById('no-btn');
-            btn.style.left = "50%";
-            btn.style.top = "auto";
-            btn.style.bottom = "20px";
-            btn.style.transform = "translateX(-50%)";
+        function resetButtons() {
+            // รีเซ็ตขนาดปุ่ม YES
+            yesScale = 1;
+            const yesBtn = document.getElementById('yes-btn');
+            yesBtn.style.transform = `scale(${yesScale})`;
+            
+            // รีเซ็ตตำแหน่งปุ่ม NO
+            const noBtn = document.getElementById('no-btn');
+            noBtn.style.position = "relative";
+            noBtn.style.left = "auto";
+            noBtn.style.top = "auto";
+            noBtn.style.marginRight = "-100px"; // ให้ห่างจากปุ่ม YES นิดหน่อยตอนเริ่ม
         }
 
-        // 3. NO Button: Restricted Movement within #btn-area
+        // Logic ปุ่ม NO หนี และปุ่ม YES ใหญ่ขึ้น
         const noBtn = document.getElementById('no-btn');
+        const yesBtn = document.getElementById('yes-btn');
         const btnArea = document.getElementById('btn-area');
 
         noBtn.addEventListener('mouseover', function() {
+            // 1. ทำให้ปุ่ม YES ใหญ่ขึ้นครั้งละ 0.2 (20%)
+            yesScale += 0.2;
+            yesBtn.style.transform = `scale(${yesScale})`;
+
+            // 2. ทำให้ปุ่ม NO วิ่งหนี
             const containerWidth = btnArea.clientWidth;
             const containerHeight = btnArea.clientHeight;
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
 
-            // สุ่มตำแหน่งใหม่ภายในขอบเขตของ btn-area เท่านั้น
             const newX = Math.random() * (containerWidth - btnWidth);
             const newY = Math.random() * (containerHeight - btnHeight);
 
+            noBtn.style.position = "absolute";
             noBtn.style.left = `${newX}px`;
             noBtn.style.top = `${newY}px`;
-            noBtn.style.bottom = "auto";
-            noBtn.style.transform = "none";
+            noBtn.style.marginRight = "0";
         });
 
-        // 4. Photo Stack Logic
         function generateStack(type, count, captions) {
             const container = document.getElementById(type === 'random' ? 'stack-random' : 'stack-food');
             container.innerHTML = '';
