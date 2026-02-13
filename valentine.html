@@ -9,81 +9,48 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* ล็อกไม่ให้เลื่อนหน้าจอและป้องกันการซูม */
         html, body { 
-            height: 100%; 
-            margin: 0; 
-            padding: 0; 
-            overflow: hidden; 
-            background-color: #fff1f2;
-            touch-action: none; /* ป้องกันการเลื่อนหน้าจอแบบลาก */
+            height: 100%; margin: 0; padding: 0; overflow: hidden; 
+            background-color: #fff1f2; touch-action: none; 
         }
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif;
             transition: background-color 1.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
-        
-        button { touch-action: manipulation; } /* แก้ปัญหาแตะแล้วซูมใน iPhone */
-
-        .particle {
-            position: absolute; pointer-events: none;
-            animation: floatUp 8s linear infinite; opacity: 0.3;
-        }
+        button { touch-action: manipulation; }
+        .particle { position: absolute; pointer-events: none; animation: floatUp 8s linear infinite; opacity: 0.3; }
         @keyframes floatUp {
             0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
             50% { opacity: 0.6; }
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
-
-        /* ปรับขนาด Stack ให้เหมาะกับจอ iPhone */
         .photo-stack { position: relative; width: 240px; height: 320px; margin: 0 auto; z-index: 10; }
         .stacked-photo {
             position: absolute; width: 100%; height: 100%;
             background: white; padding: 10px 10px 50px 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            border-radius: 8px; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 8px; cursor: pointer;
             transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s;
         }
         .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
-        .photo-caption {
-            position: absolute; bottom: 12px; left: 0; width: 100%;
-            text-align: center; font-size: 11px; font-weight: 700; color: #f43f5e;
-        }
+        .photo-caption { position: absolute; bottom: 12px; left: 0; width: 100%; text-align: center; font-size: 11px; font-weight: 700; color: #f43f5e; }
         .photo-out { transform: translate(160%, -20%) rotate(35deg) scale(0.5) !important; opacity: 0; pointer-events: none; }
-
-        #btn-area {
-            position: relative; width: 100%; height: 280px; 
-            margin-top: 1rem; display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-        }
-
+        #btn-area { position: relative; width: 100%; height: 280px; margin-top: 1rem; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         #yes-btn { z-index: 100; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        #no-btn {
-            background-color: #e2e8f0; color: #475569;
-            transition: left 0.3s ease-out, top 0.3s ease-out;
-            position: absolute; z-index: 40;
-        }
-
+        #no-btn { background-color: #e2e8f0; color: #475569; transition: left 0.3s ease-out, top 0.3s ease-out; position: absolute; z-index: 40; }
         .heart-widget { width: 120px; height: 120px; margin: 0 auto; cursor: pointer; }
         .heart-fill-path { fill: #f43f5e; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-
         .hidden-section { display: none; }
         .section-fade { animation: fadeIn 0.6s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* ป้องกัน iPhone Zoom เมื่อกด Input */
         input[type="text"] { font-size: 16px !important; }
+        .typing::after { content: '|'; animation: blink 0.7s infinite; color: #f43f5e; }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
-
     <div id="particles-bg"></div>
-
     <div id="main-container" class="bg-white/95 backdrop-blur-sm p-8 md:p-12 rounded-[2rem] shadow-2xl max-w-[90%] w-[400px] text-center relative z-50 border border-white">
-        
         <div id="display-icon" class="text-4xl mb-6">🎁</div>
 
         <div id="section-decoder" class="section-fade">
@@ -121,10 +88,10 @@
         <div id="section-card" class="hidden-section section-fade">
             <div class="text-rose-500 text-3xl mb-4">💌</div>
             <h3 class="text-2xl text-slate-800 mb-6 font-bold">Hi, favorite person.</h3>
-            <div id="typing-container" class="space-y-3 text-slate-600 text-md font-medium italic min-h-[100px]">
-                <p id="type-p1"></p><p id="type-p2"></p>
+            <div id="typing-container" class="space-y-3 text-slate-600 text-[15px] font-medium italic leading-relaxed text-left">
+                <p id="type-p1"></p><p id="type-p2"></p><p id="type-p3"></p>
             </div>
-            <button id="final-cta" onclick="finalize()" class="mt-8 bg-rose-500 text-white px-10 py-3 rounded-full font-bold shadow-xl opacity-0 transition-opacity">THE END ❤️</button>
+            <button id="final-cta" onclick="finalize()" class="mt-8 bg-rose-500 text-white px-10 py-3 rounded-full font-bold shadow-xl opacity-0 transition-opacity">YOU’RE MY FAVORITE LOGIC ❤️</button>
         </div>
 
         <div id="section-finale" class="hidden-section section-fade">
@@ -137,10 +104,12 @@
     </div>
 
     <script>
-        const randomCaptions = ["ไปเที่ยวไหนเนี่ย", "ไปดูโขน ชอบมาก", "ชอบทะเล", "ไปซื้อของกินกันเยอะๆ", "ไปโยนๆหลายๆที่เลย", "นั่งที่สวนดูผมพี่", "ชอบดอกไม้", "ไปเที่ยวอีกไหมคะ", "ไปปั่นจักรยานด้วย", "ไปกินเนื้อร้านอร่อย"];
-        const foodCaptions = ["ผลไม้เบบี๋", "ข้าวอบแซลม่อน แบบไม่รู้ว่าไม่ชอบกินข้าวเปียกน้ำ", "เป่าเค้กวันเกิดทำเองนะ", "ปลาฮอกเกะกับทะเลของโปรด", "ชาบูรวมของอร่อย", "กุ้งดอง แซลมอนแซ่บ", "รวมเซตเมนูพุงกาง", "สเต็กเนื้อ ยำม่อน น้ำพริก", "ตำแตงก็ของโปรด ขาดไม่ได้", "ม่อนดองก็ด้วย อร่อยสุดๆ"];
-        const questions = ["พี่จะตามใจหนูทุกอย่างรึป่าว?", "พี่จะคิดถึงหนูเยอะๆตลอดเวลาไหม?", "พี่จะบอกง่ายและเชื่อฟังใช่ไหมคะ?", "พี่จะพาไปเที่ยวเยอะๆๆเลยนะ?", "พี่จะพาไปแมคโครบ่อยๆด้วยค่ะ?", "พี่จะอยากกินทุกอย่างที่หนูทำให้กินไหม?", "พี่จะไม่ลืมกอดๆหนูตอนเช้าเย็นก่อนนอน?", "พี่จะรักๆหนูเยอะๆๆทุกวันตลอดเวลาเลย?"];
+        // --- ส่วนที่อัปเดต Emoji ---
+        const randomCaptions = ["ไปเที่ยวไหนเนี่ย 🚗", "ไปดูโขน ชอบมาก 🎭", "ชอบทะเล 🌊", "ไปซื้อของกินกันเยอะๆ 🛒", "ไปโยนๆหลายๆที่เลย 🎢", "นั่งที่สวนดูผมพี่ 🌳", "ชอบดอกไม้ 🌸", "ไปเที่ยวอีกไหมคะ ✈️", "ไปปั่นจักรยานด้วย 🚲", "ไปกินเนื้อร้านอร่อย 🥩"];
+        const foodCaptions = ["ผลไม้เบบี๋ 🍓", "ข้าวอบแซลม่อน 🍱", "เป่าเค้กวันเกิดทำเองนะ 🎂", "ปลาฮอกเกะกับทะเล 🐟", "ชาบูรวมของอร่อย 🍲", "กุ้งดอง แซลมอนแซ่บ 🌶️", "รวมเซตเมนูพุงกาง 😋", "สเต็กเนื้อ ยำม่อน น้ำพริก 🥘", "ตำแตงก็ของโปรด 🥗", "ม่อนดองก็ด้วย อร่อยสุดๆ 🍣"];
+        const questions = ["พี่จะตามใจหนูทุกอย่างรึป่าว? ✨", "พี่จะคิดถึงหนูเยอะๆตลอดเวลาไหม? 💭", "พี่จะบอกง่ายและเชื่อฟังใช่ไหมคะ? 😇", "พี่จะพาไปเที่ยวเยอะๆๆเลยนะ? 🗺️", "พี่จะพาไปแมคโครบ่อยๆด้วยค่ะ? 🛒", "พี่จะอยากกินทุกอย่างที่หนูทำให้กินไหม? 🍳", "พี่จะไม่ลืมกอดๆหนูตอนเช้าเย็นก่อนนอน? 🫂", "พี่จะรักๆหนูเยอะๆๆทุกวันตลอดเวลาเลย? ❤️"];
         
+        // --- นอกนั้นคงเดิมตาม Logic ล่าสุด ---
         let currentStep = 0; let yesScale = 1; let heartCharge = 0;
 
         function createParticles() {
@@ -211,10 +180,9 @@
         const yesBtn = document.getElementById('yes-btn');
         const btnArea = document.getElementById('btn-area');
 
-        // ใช้ทั้ง mouseover (Desktop) และ touchstart (Mobile) เพื่อความไว
         ['mouseover', 'touchstart'].forEach(evt => {
             noBtn.addEventListener(evt, function(e) {
-                if(evt === 'touchstart') e.preventDefault(); // ป้องกันการ Tap ซ้ำ
+                if(evt === 'touchstart') e.preventDefault();
                 if (yesScale < 1.8) { yesScale += 0.15; yesBtn.style.transform = `scale(${yesScale})`; }
                 const area = btnArea.getBoundingClientRect();
                 const yesR = yesBtn.getBoundingClientRect();
@@ -233,12 +201,19 @@
         });
 
         function startTyping() {
-            const l1 = "ขอบคุณที่อยู่เคียงข้างกันเสมอมา";
-            const l2 = "คุณคือ Logic ที่สมบูรณ์แบบที่สุดของ MJ เลยนะ";
-            typeText('type-p1', l1, 60, () => {
-                setTimeout(() => { typeText('type-p2', l2, 60, () => {
-                    document.getElementById('final-cta').classList.remove('opacity-0');
-                }); }, 400);
+            const line1 = "เย้ ขอให้พี่มีแต่วันที่ดีๆ ทุกวันนะคะ ✨ ขอบคุณที่ทำให้มีความสุขทุกวันๆเลยนะคะ 💖";
+            const line2 = "แล้วก็ให้หนูทำกับข้าวให้กินเยอะๆเลยค่ะ 🍳 ขอให้สุขภาพแข็งแรง ท้องอืดน้อยลงด้วยนะคะ ✌️";
+            const line3 = "ขอบคุณที่เข้าใจ love logic แบบนี้ และขอให้ทำความเข้าใจไปเรื่อยๆนะคะ 🥰";
+            typeText('type-p1', line1, 50, () => {
+                setTimeout(() => { 
+                    typeText('type-p2', line2, 50, () => {
+                        setTimeout(() => {
+                            typeText('type-p3', line3, 50, () => {
+                                document.getElementById('final-cta').classList.remove('opacity-0');
+                            });
+                        }, 400);
+                    }); 
+                }, 400);
             });
         }
 
