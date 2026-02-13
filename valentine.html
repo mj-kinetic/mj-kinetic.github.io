@@ -46,17 +46,15 @@
         input[type="text"] { font-size: 16px !important; }
         .typing::after { content: '|'; animation: blink 0.7s infinite; color: #f43f5e; }
         @keyframes blink { 50% { opacity: 0; } }
+        
+        /* ซ่อนวิดีโอ YouTube */
         #youtube-player { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
-    <audio id="sfx-click" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
-    <audio id="sfx-pop" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
-    <audio id="sfx-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
-
     <div id="youtube-player"></div>
-    <div id="particles-bg"></div>
 
+    <div id="particles-bg"></div>
     <div id="main-container" class="bg-white/95 backdrop-blur-sm p-8 md:p-12 rounded-[2rem] shadow-2xl max-w-[90%] w-[400px] text-center relative z-50 border border-white">
         <div id="display-icon" class="text-4xl mb-6">🎁</div>
 
@@ -113,19 +111,26 @@
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
+        // --- YouTube Music Setup ---
         let player;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
-                height: '0', width: '0', videoId: 'U-fXJ6uNid8',
-                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'U-fXJ6uNid8' }
+                height: '0',
+                width: '0',
+                videoId: 'U-fXJ6uNid8', // ID เพลงรัก - Three Man Down
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': 'U-fXJ6uNid8'
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
             });
         }
-
-        // SFX Functions
-        function playSFX(id) {
-            const sfx = document.getElementById(id);
-            sfx.currentTime = 0;
-            sfx.play().catch(e => {});
+        function onPlayerReady(event) {
+            // Player พร้อมใช้งาน
         }
 
         const randomCaptions = ["ไปเที่ยวไหนเนี่ย 🚗", "ไปดูโขน ชอบมาก 🎭", "ชอบทะเล 🌊", "ไปซื้อของกินกันเยอะๆ 🛒", "ไปโยนๆหลายๆที่เลย 🎢", "นั่งที่สวนดูผมพี่ 🌳", "ชอบดอกไม้ 🌸", "ไปเที่ยวอีกไหมคะ ✈️", "ไปปั่นจักรยานด้วย 🚲", "ไปกินเนื้อร้านอร่อย 🥩"];
@@ -156,8 +161,10 @@
 
         function checkCode() {
             if (document.getElementById('passcode').value === '35250*') {
-                playSFX('sfx-click');
-                if (player && player.playVideo) player.playVideo();
+                // เริ่มเล่นเพลงเมื่อกดยืนยัน (User Interaction)
+                if (player && player.playVideo) {
+                    player.playVideo();
+                }
                 transition('section-decoder', 'section-charge');
             } else { alert("Code: 35250*"); }
         }
@@ -165,12 +172,10 @@
         function chargeHeart() {
             if (heartCharge < 100) {
                 heartCharge += 10;
-                playSFX('sfx-click');
                 document.getElementById('fillLevel').setAttribute('y', 32 - (32 * (heartCharge / 100)));
                 const ct = document.getElementById('charge-percent');
                 ct.innerText = `${heartCharge}%`; ct.style.color = `rgba(244, 63, 94, ${0.3 + (heartCharge/100)})`;
                 if (heartCharge === 100) {
-                    playSFX('sfx-success');
                     confetti({ particleCount: 40, spread: 70, origin: { y: 0.7 } });
                     const nb = document.getElementById('charge-next-btn');
                     nb.disabled = false; nb.innerText = "Authorize Access";
@@ -180,7 +185,7 @@
             }
         }
 
-        function goToQuestions() { playSFX('sfx-click'); transition('section-charge', 'section-questions'); updateQuestion(); }
+        function goToQuestions() { transition('section-charge', 'section-questions'); updateQuestion(); }
 
         function updateQuestion() {
             if (currentStep < questions.length) {
@@ -193,12 +198,7 @@
             }
         }
 
-        function handleYes() { 
-            playSFX('sfx-click');
-            confetti({ particleCount: 20, spread: 50, origin: { y: 0.8 } }); 
-            currentStep++; 
-            updateQuestion(); 
-        }
+        function handleYes() { confetti({ particleCount: 20, spread: 50, origin: { y: 0.8 } }); currentStep++; updateQuestion(); }
 
         function resetButtons() {
             yesScale = 1;
@@ -214,7 +214,6 @@
         ['mouseover', 'touchstart'].forEach(evt => {
             noBtn.addEventListener(evt, function(e) {
                 if(evt === 'touchstart') e.preventDefault();
-                playSFX('sfx-pop');
                 if (yesScale < 1.8) { yesScale += 0.15; yesBtn.style.transform = `scale(${yesScale})`; }
                 const area = btnArea.getBoundingClientRect();
                 const yesR = yesBtn.getBoundingClientRect();
@@ -268,7 +267,6 @@
                 div.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg) translateY(${i*-1}px)`;
                 div.innerHTML = `<img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/200x260/f8fafc/f43f5e?text=${type}+${i+1}'"><div class="photo-caption">${caps[i]}</div>`;
                 div.onclick = function() {
-                    playSFX('sfx-pop');
                     this.classList.add('photo-out'); rem--;
                     if(rem === 0) setTimeout(() => {
                         if(type === 'random') { transition('section-random', 'section-food', '#f0fdf4'); generateStack('food', 10, foodCaptions); }
@@ -280,7 +278,6 @@
         }
 
         function finalize() {
-            playSFX('sfx-success');
             transition('section-card', 'section-finale');
             const end = Date.now() + 5000;
             (function frame() {
