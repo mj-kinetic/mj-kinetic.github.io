@@ -47,6 +47,20 @@
         input[type="text"] { font-size: 16px !important; }
         .typing::after { content: '|'; animation: blink 0.7s infinite; color: #f43f5e; }
         @keyframes blink { 50% { opacity: 0; } }
+        /* สไตล์ข้อความบอกให้สไลด์ */
+        .swipe-instruction {
+            font-size: 10px;
+            color: #fb7185;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -87,8 +101,17 @@
             </div>
         </div>
 
-        <div id="section-random" class="hidden-section section-fade"><h2 class="text-xl mb-6 font-bold">Everywhere with you is my favorite place</h2><div id="stack-random" class="photo-stack"></div></div>
-        <div id="section-food" class="hidden-section section-fade"><h2 class="text-xl mb-6 font-bold">1% food and 99% of my love</h2><div id="stack-food" class="photo-stack"></div></div>
+        <div id="section-random" class="hidden-section section-fade">
+            <h2 class="text-xl mb-2 font-bold">Everywhere with you is my favorite place</h2>
+            <p class="swipe-instruction">── Swipe to see more memories ──</p>
+            <div id="stack-random" class="photo-stack"></div>
+        </div>
+        
+        <div id="section-food" class="hidden-section section-fade">
+            <h2 class="text-xl mb-2 font-bold">1% food and 99% of my love</h2>
+            <p class="swipe-instruction">── Swipe to see more memories ──</p>
+            <div id="stack-food" class="photo-stack"></div>
+        </div>
 
         <div id="section-card" class="hidden-section section-fade">
             <div class="text-rose-500 text-3xl mb-4">💌</div>
@@ -235,7 +258,6 @@
                 div.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg) translateY(${i*-1}px)`;
                 div.innerHTML = `<img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/200x260/f8fafc/f43f5e?text=${type}+${i+1}'"><div class="photo-caption">${caps[i]}</div>`;
                 
-                // Swipe Logic
                 let startX = 0;
                 div.addEventListener('touchstart', (e) => startX = e.touches[0].clientX);
                 div.addEventListener('touchend', (e) => {
@@ -248,7 +270,6 @@
                         }, 1200);
                     }
                 });
-                // Fallback for Desktop (Drag slightly)
                 div.addEventListener('mousedown', (e) => startX = e.clientX);
                 div.addEventListener('mouseup', (e) => {
                     let diff = e.clientX - startX;
