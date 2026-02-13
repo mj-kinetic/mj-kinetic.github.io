@@ -2,21 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MJ-Lab | The Perfect Experience</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        body { 
-            background-color: #fff1f2; 
+        /* ล็อกไม่ให้เลื่อนหน้าจอและป้องกันการซูม */
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
             overflow: hidden; 
+            background-color: #fff1f2;
+            touch-action: none; /* ป้องกันการเลื่อนหน้าจอแบบลาก */
+        }
+        body { 
             font-family: 'Plus Jakarta Sans', sans-serif;
             transition: background-color 1.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        h1, h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; }
         
+        button { touch-action: manipulation; } /* แก้ปัญหาแตะแล้วซูมใน iPhone */
+
         .particle {
             position: absolute; pointer-events: none;
             animation: floatUp 8s linear infinite; opacity: 0.3;
@@ -27,175 +38,120 @@
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
 
-        .photo-stack { position: relative; width: 280px; height: 350px; margin: 0 auto; z-index: 10; }
+        /* ปรับขนาด Stack ให้เหมาะกับจอ iPhone */
+        .photo-stack { position: relative; width: 240px; height: 320px; margin: 0 auto; z-index: 10; }
         .stacked-photo {
             position: absolute; width: 100%; height: 100%;
-            background: white; padding: 12px 12px 60px 12px;
+            background: white; padding: 10px 10px 50px 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             border-radius: 8px; cursor: pointer;
             transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s;
         }
         .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
         .photo-caption {
-            position: absolute; bottom: 15px; left: 0; width: 100%;
-            text-align: center; font-size: 12px; font-weight: 700; color: #f43f5e;
+            position: absolute; bottom: 12px; left: 0; width: 100%;
+            text-align: center; font-size: 11px; font-weight: 700; color: #f43f5e;
         }
         .photo-out { transform: translate(160%, -20%) rotate(35deg) scale(0.5) !important; opacity: 0; pointer-events: none; }
 
         #btn-area {
-            position: relative;
-            width: 100%;
-            height: 320px; 
-            margin-top: 1rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            position: relative; width: 100%; height: 280px; 
+            margin-top: 1rem; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
         }
 
-        #yes-btn {
-            z-index: 100;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            white-space: nowrap;
-            position: relative;
-        }
-
+        #yes-btn { z-index: 100; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #no-btn {
-            background-color: #e2e8f0; 
-            color: #475569;
+            background-color: #e2e8f0; color: #475569;
             transition: left 0.3s ease-out, top 0.3s ease-out;
-            will-change: left, top; 
-            font-weight: 600;
-            position: absolute;
-            z-index: 40;
+            position: absolute; z-index: 40;
         }
 
-        .heart-widget {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            margin: 0 auto;
-            cursor: pointer;
-        }
-        .heart-svg {
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
-        }
-        .heart-bg { fill: #f1f5f9; }
-        .heart-fill-path { 
-            fill: #f43f5e; 
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .heart-beat-anim { animation: heartPunch 0.4s; }
-        @keyframes heartPunch {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
-        }
-
-        /* Typing cursor effect */
-        .typing::after {
-            content: '|';
-            animation: blink 0.7s infinite;
-        }
-        @keyframes blink { 50% { opacity: 0; } }
-
-        /* Finale SVG Pulse */
-        .finale-heart {
-            animation: pulse-soft 2s infinite ease-in-out;
-        }
-        @keyframes pulse-soft {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.2)); }
-            50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(244, 63, 94, 0.4)); }
-        }
+        .heart-widget { width: 120px; height: 120px; margin: 0 auto; cursor: pointer; }
+        .heart-fill-path { fill: #f43f5e; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
         .hidden-section { display: none; }
-        .section-fade { animation: fadeIn 0.8s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .section-fade { animation: fadeIn 0.6s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ป้องกัน iPhone Zoom เมื่อกด Input */
+        input[type="text"] { font-size: 16px !important; }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body>
 
     <div id="particles-bg"></div>
 
-    <div id="main-container" class="bg-white/90 backdrop-blur-sm p-10 md:p-14 rounded-[2.5rem] shadow-2xl max-w-lg w-full text-center relative z-50 border border-white">
+    <div id="main-container" class="bg-white/95 backdrop-blur-sm p-8 md:p-12 rounded-[2rem] shadow-2xl max-w-[90%] w-[400px] text-center relative z-50 border border-white">
         
-        <div id="display-icon" class="text-5xl mb-8">🎁</div>
+        <div id="display-icon" class="text-4xl mb-6">🎁</div>
 
         <div id="section-decoder" class="section-fade">
-            <h1 class="text-3xl text-slate-800 mb-2 tracking-tight">System Locked</h1>
-            <p class="text-slate-400 text-[11px] mb-8 font-bold uppercase tracking-widest">MJ-Lab Security Protocol</p>
-            <input type="text" id="passcode" placeholder="----" maxlength="4" class="bg-slate-100 border-none rounded-xl px-4 py-4 text-center text-rose-500 text-3xl font-bold tracking-[0.6em] focus:ring-2 focus:ring-rose-300 w-full mb-8">
-            <button onclick="checkCode()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition-all uppercase text-sm tracking-widest">Authorize Access</button>
+            <h1 class="text-2xl text-slate-800 mb-1 font-bold">System Locked</h1>
+            <p class="text-slate-400 text-[10px] mb-6 font-bold uppercase tracking-widest">Security Protocol</p>
+            <input type="text" id="passcode" placeholder="----" maxlength="4" class="bg-slate-100 border-none rounded-xl px-4 py-3 text-center text-rose-500 text-2xl font-bold tracking-[0.6em] w-full mb-6 focus:ring-2 focus:ring-rose-300">
+            <button onclick="checkCode()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold uppercase text-xs tracking-widest active:scale-95 transition-transform">Authorize</button>
         </div>
 
         <div id="section-charge" class="hidden-section section-fade">
-            <h2 class="text-2xl text-slate-800 mb-4 px-4 font-bold">ก่อนไปเล่นเกมตอบคำถาม logic นี้...</h2>
-            <p class="text-rose-500 font-bold mb-8 uppercase tracking-widest text-sm">ใน 100% รักฉันกี่ %?</p>
+            <h2 class="text-xl text-slate-800 mb-4 font-bold">รักฉันกี่ %?</h2>
             <div class="heart-widget mb-6" onclick="chargeHeart()">
-                <svg class="heart-svg" viewBox="0 0 32 32">
+                <svg class="w-full h-full" viewBox="0 0 32 32">
                     <defs><clipPath id="heartClip"><rect id="fillLevel" x="0" y="32" width="32" height="32" /></clipPath></defs>
-                    <path class="heart-bg" d="M16 28.5L14.1 26.6C7.3 20.5 2.8 16.4 2.8 11.4C2.8 7.3 6 4.1 10.1 4.1C12.4 4.1 14.6 5.2 16 7C17.4 5.2 19.6 4.1 21.9 4.1C26 4.1 29.2 7.3 29.2 11.4C29.2 16.4 24.7 20.5 17.9 26.6L16 28.5Z"/>
+                    <path fill="#f1f5f9" d="M16 28.5L14.1 26.6C7.3 20.5 2.8 16.4 2.8 11.4C2.8 7.3 6 4.1 10.1 4.1C12.4 4.1 14.6 5.2 16 7C17.4 5.2 19.6 4.1 21.9 4.1C26 4.1 29.2 7.3 29.2 11.4C29.2 16.4 24.7 20.5 17.9 26.6L16 28.5Z"/>
                     <path class="heart-fill-path" clip-path="url(#heartClip)" d="M16 28.5L14.1 26.6C7.3 20.5 2.8 16.4 2.8 11.4C2.8 7.3 6 4.1 10.1 4.1C12.4 4.1 14.6 5.2 16 7C17.4 5.2 19.6 4.1 21.9 4.1C26 4.1 29.2 7.3 29.2 11.4C29.2 16.4 24.7 20.5 17.9 26.6L16 28.5Z"/>
                 </svg>
             </div>
-            <div id="charge-percent" class="text-4xl font-black text-slate-300 mb-8 transition-colors">0%</div>
-            <button id="charge-next-btn" onclick="goToQuestions()" class="w-full bg-slate-200 text-slate-400 py-4 rounded-xl font-bold uppercase text-sm tracking-widest cursor-not-allowed transition-all" disabled>กรุณาเติมความรักให้เต็ม</button>
+            <div id="charge-percent" class="text-3xl font-black text-slate-300 mb-6">0%</div>
+            <button id="charge-next-btn" onclick="goToQuestions()" class="w-full bg-slate-200 text-slate-400 py-3 rounded-xl font-bold uppercase text-xs disabled:cursor-not-allowed" disabled>เติมสีให้เต็มหัวใจ</button>
         </div>
 
         <div id="section-questions" class="hidden-section section-fade">
-            <p id="status-msg" class="text-[10px] text-rose-500 font-bold mb-6 tracking-widest uppercase"></p>
-            <h2 id="question-text" class="text-2xl text-slate-700 min-h-[5rem] flex items-center justify-center px-4 font-bold tracking-tight"></h2>
+            <p id="status-msg" class="text-[9px] text-rose-500 font-bold mb-4 uppercase tracking-tighter"></p>
+            <h2 id="question-text" class="text-xl text-slate-700 min-h-[4rem] flex items-center justify-center font-bold px-2"></h2>
             <div id="btn-area">
-                <button id="yes-btn" onclick="handleYes()" class="bg-rose-500 text-white px-10 py-4 rounded-full text-lg shadow-xl shadow-rose-100 hover:bg-rose-600 active:scale-95 transition-all font-bold">YES</button>
-                <button id="no-btn" class="px-8 py-3 rounded-full text-md">NO</button>
+                <button id="yes-btn" onclick="handleYes()" class="bg-rose-500 text-white px-8 py-3 rounded-full text-lg shadow-lg hover:bg-rose-600 active:scale-90 transition-all font-bold">YES</button>
+                <button id="no-btn" class="px-6 py-2 rounded-full text-sm">NO</button>
             </div>
         </div>
 
-        <div id="section-random" class="hidden-section section-fade"><h2 class="text-2xl text-slate-800 mb-2">Memory Stack #01</h2><p class="text-[10px] text-slate-400 mb-10 font-bold uppercase tracking-widest">Click to reveal next layer</p><div id="stack-random" class="photo-stack"></div></div>
-        <div id="section-food" class="hidden-section section-fade"><h2 class="text-2xl text-slate-800 mb-2">Memory Stack #02</h2><p class="text-[10px] text-slate-400 mb-10 font-bold uppercase tracking-widest">Delicious Fragments</p><div id="stack-food" class="photo-stack"></div></div>
+        <div id="section-random" class="hidden-section section-fade"><h2 class="text-xl mb-6 font-bold">Memory Stack #01</h2><div id="stack-random" class="photo-stack"></div></div>
+        <div id="section-food" class="hidden-section section-fade"><h2 class="text-xl mb-6 font-bold">Memory Stack #02</h2><div id="stack-food" class="photo-stack"></div></div>
 
         <div id="section-card" class="hidden-section section-fade">
-            <div class="text-rose-500 text-3xl mb-6">💌</div>
-            <h3 class="text-3xl text-slate-800 mb-8">Hello, Darling</h3>
-            <div id="typing-container" class="space-y-4 text-slate-600 text-lg font-medium italic min-h-[120px]">
-                <p id="type-p1"></p>
-                <p id="type-p2"></p>
+            <div class="text-rose-500 text-3xl mb-4">💌</div>
+            <h3 class="text-2xl text-slate-800 mb-6 font-bold">Hello, Darling</h3>
+            <div id="typing-container" class="space-y-3 text-slate-600 text-md font-medium italic min-h-[100px]">
+                <p id="type-p1"></p><p id="type-p2"></p>
             </div>
-            <button id="final-cta" onclick="finalize()" class="mt-12 bg-rose-500 text-white px-12 py-4 rounded-full font-bold shadow-xl animate-bounce opacity-0 transition-opacity duration-1000">THE END ❤️</button>
+            <button id="final-cta" onclick="finalize()" class="mt-8 bg-rose-500 text-white px-10 py-3 rounded-full font-bold shadow-xl opacity-0 transition-opacity">THE END ❤️</button>
         </div>
 
         <div id="section-finale" class="hidden-section section-fade">
-            <div class="flex justify-center mb-8">
-                <svg class="w-32 h-32 finale-heart" viewBox="0 0 100 100">
-                    <path fill="#f43f5e" d="M92.71,7.27c-9.71-9.69-25.46-9.69-35.18,0L50,14.79l-7.53-7.52C32.75-2.42,17-2.42,7.29,7.27 c-9.71,9.69-9.71,25.41,0,35.1L50,85l42.71-42.63C102.43,32.68,102.43,16.96,92.71,7.27z"/>
-                    <path fill="#fda4af" opacity="0.8" d="M72,55c-4.42-4.41-11.58-4.41-16,0L50,61l-6-6c-4.42-4.41-11.58-4.41-16,0 c-4.42,4.41-4.42,11.56,0,15.97L50,93l22-22.03C76.42,66.56,76.42,59.41,72,55z"/>
-                </svg>
-            </div>
-            <h1 class="text-4xl text-rose-600 mb-4">MISSION COMPLETE!</h1>
-            <p class="text-slate-400 font-bold tracking-[0.4em] text-xs uppercase">Happy Valentine's Day</p>
-            <p class="text-slate-500 mt-6 font-medium italic">"You are my favorite logic."</p>
+            <svg class="w-24 h-24 finale-heart mx-auto mb-6" viewBox="0 0 100 100">
+                <path fill="#f43f5e" d="M92.71,7.27c-9.71-9.69-25.46-9.69-35.18,0L50,14.79l-7.53-7.52C32.75-2.42,17-2.42,7.29,7.27 c-9.71,9.69-9.71,25.41,0,35.1L50,85l42.71-42.63C102.43,32.68,102.43,16.96,92.71,7.27z"/>
+            </svg>
+            <h1 class="text-3xl text-rose-600 mb-2 font-bold">COMPLETE!</h1>
+            <p class="text-slate-400 font-bold tracking-[0.2em] text-[10px] uppercase">Happy Valentine's Day</p>
         </div>
     </div>
 
     <script>
-        const questions = ["Ready for the memory test?", "Will you answer with your heart?", "Do you like this MJ-Lab project?", "Excited for the surprise?", "Should we celebrate today together?", "Are you prepared for the next phase?", "Almost there... ready?", "Will you be my Valentine?"];
-        const randomCaptions = ["Happy Day", "Cute Smile", "Our Secret", "Together", "Funny Time", "Sweet Moment", "Always You", "Perfect View", "Best Trip", "Heart"];
-        const foodCaptions = ["Delicious!", "First Date", "Sweet Treats", "Yummy!", "Dinner Time", "Our Favorite", "Happy Meal", "Tasty!", "Lunch Date", "Hungry MJ"];
+        const randomCaptions = ["รูป 1", "รูป 2", "รูป 3", "รูป 4", "รูป 5", "รูป 6", "รูป 7", "รูป 8", "รูป 9", "รูป 10"];
+        const foodCaptions = ["อาหาร 1", "อาหาร 2", "อาหาร 3", "อาหาร 4", "อาหาร 5", "อาหาร 6", "อาหาร 7", "อาหาร 8", "อาหาร 9", "อาหาร 10"];
+        const questions = ["Ready for the test?", "Answer with heart?", "Like this MJ-Lab?", "Excited?", "Celebrate together?", "Prepared?", "Almost there?", "Will you be my Valentine?"];
         
-        let currentStep = 0;
-        let yesScale = 1;
-        let heartCharge = 0;
+        let currentStep = 0; let yesScale = 1; let heartCharge = 0;
 
         function createParticles() {
             const container = document.getElementById('particles-bg');
-            const icons = ['❤️', '💖', '✨', '🌸', '☁️'];
-            for(let i=0; i<20; i++) {
+            const icons = ['❤️', '✨', '🌸'];
+            for(let i=0; i<15; i++) {
                 const p = document.createElement('div');
                 p.className = 'particle'; p.innerText = icons[Math.floor(Math.random()*icons.length)];
-                p.style.left = Math.random() * 100 + 'vw'; p.style.fontSize = (Math.random() * 20 + 10) + 'px';
-                p.style.animationDelay = (Math.random() * 8) + 's'; container.appendChild(p);
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(p);
             }
         }
         createParticles();
@@ -204,39 +160,32 @@
             document.getElementById(from).classList.add('hidden-section');
             document.getElementById(to).classList.remove('hidden-section');
             if(bgColor) document.body.style.backgroundColor = bgColor;
-            
-            // Trigger Typing Effect if entering card section
-            if(to === 'section-card') {
-                startTyping();
-            }
+            if(to === 'section-card') startTyping();
         }
 
         function checkCode() {
             if (document.getElementById('passcode').value === '1402') {
-                transition('section-decoder', 'section-charge', '#fff1f2');
-            } else { alert("Code is 1402"); }
+                transition('section-decoder', 'section-charge');
+            } else { alert("Code: 1402"); }
         }
 
         function chargeHeart() {
             if (heartCharge < 100) {
                 heartCharge += 10;
-                const fillRect = document.getElementById('fillLevel');
-                const chargeText = document.getElementById('charge-percent');
-                const nextBtn = document.getElementById('charge-next-btn');
-                fillRect.setAttribute('y', 32 - (32 * (heartCharge / 100)));
-                chargeText.innerText = `${heartCharge}%`;
-                chargeText.style.color = `rgba(244, 63, 94, ${0.3 + (heartCharge/100)})`;
+                document.getElementById('fillLevel').setAttribute('y', 32 - (32 * (heartCharge / 100)));
+                const ct = document.getElementById('charge-percent');
+                ct.innerText = `${heartCharge}%`; ct.style.color = `rgba(244, 63, 94, ${0.3 + (heartCharge/100)})`;
                 if (heartCharge === 100) {
-                    confetti({ particleCount: 50, spread: 80, origin: { y: 0.6 } });
-                    nextBtn.disabled = false;
-                    nextBtn.innerText = "Authorize Access";
-                    nextBtn.classList.remove('bg-slate-200', 'text-slate-400');
-                    nextBtn.classList.add('bg-slate-900', 'text-white');
+                    confetti({ particleCount: 40, spread: 70, origin: { y: 0.7 } });
+                    const nb = document.getElementById('charge-next-btn');
+                    nb.disabled = false; nb.innerText = "Authorize Access";
+                    nb.classList.remove('bg-slate-200', 'text-slate-400');
+                    nb.classList.add('bg-slate-900', 'text-white');
                 }
             }
         }
 
-        function goToQuestions() { transition('section-charge', 'section-questions', '#fff1f2'); updateQuestion(); }
+        function goToQuestions() { transition('section-charge', 'section-questions'); updateQuestion(); }
 
         function updateQuestion() {
             if (currentStep < questions.length) {
@@ -249,94 +198,74 @@
             }
         }
 
-        function handleYes() {
-            confetti({ particleCount: 30, spread: 60, origin: { y: 0.8 } });
-            currentStep++; 
-            updateQuestion();
-        }
+        function handleYes() { confetti({ particleCount: 20, spread: 50, origin: { y: 0.8 } }); currentStep++; updateQuestion(); }
 
         function resetButtons() {
             yesScale = 1;
-            const yesBtn = document.getElementById('yes-btn');
-            const noBtn = document.getElementById('no-btn');
-            yesBtn.style.transform = `scale(${yesScale})`;
-            noBtn.style.position = "static";
-            noBtn.style.marginTop = "20px";
-            noBtn.style.left = "auto";
-            noBtn.style.top = "auto";
+            const yb = document.getElementById('yes-btn'); const nb = document.getElementById('no-btn');
+            yb.style.transform = `scale(${yesScale})`;
+            nb.style.position = "static"; nb.style.marginTop = "20px";
         }
 
         const noBtn = document.getElementById('no-btn');
         const yesBtn = document.getElementById('yes-btn');
         const btnArea = document.getElementById('btn-area');
 
-        noBtn.addEventListener('mouseover', function() {
-            if (yesScale < 2.0) { yesScale += 0.15; yesBtn.style.transform = `scale(${yesScale})`; }
-            const areaRect = btnArea.getBoundingClientRect();
-            const yesRect = yesBtn.getBoundingClientRect();
-            const btnW = noBtn.offsetWidth;
-            const btnH = noBtn.offsetHeight;
-            let newX, newY, isOverlapping, attempts = 0;
-            do {
-                newX = Math.random() * (areaRect.width - btnW);
-                newY = Math.random() * (areaRect.height - btnH);
-                const noR = { left: areaRect.left + newX, right: areaRect.left + newX + btnW, top: areaRect.top + newY, bottom: areaRect.top + newY + btnH };
-                isOverlapping = !(noR.right < yesRect.left - 10 || noR.left > yesRect.right + 10 || noR.bottom < yesRect.top - 10 || noR.top > yesRect.bottom + 10);
-                attempts++;
-                if(attempts > 20) isOverlapping = false;
-            } while (isOverlapping);
-            noBtn.style.position = "absolute";
-            noBtn.style.marginTop = "0";
-            noBtn.style.left = `${newX}px`;
-            noBtn.style.top = `${newY}px`;
+        // ใช้ทั้ง mouseover (Desktop) และ touchstart (Mobile) เพื่อความไว
+        ['mouseover', 'touchstart'].forEach(evt => {
+            noBtn.addEventListener(evt, function(e) {
+                if(evt === 'touchstart') e.preventDefault(); // ป้องกันการ Tap ซ้ำ
+                if (yesScale < 1.8) { yesScale += 0.15; yesBtn.style.transform = `scale(${yesScale})`; }
+                const area = btnArea.getBoundingClientRect();
+                const yesR = yesBtn.getBoundingClientRect();
+                const btnW = noBtn.offsetWidth; const btnH = noBtn.offsetHeight;
+                let newX, newY, isOver, attempts = 0;
+                do {
+                    newX = Math.random() * (area.width - btnW);
+                    newY = Math.random() * (area.height - btnH);
+                    const noR = { left: area.left + newX, right: area.left + newX + btnW, top: area.top + newY, bottom: area.top + newY + btnH };
+                    isOver = !(noR.right < yesR.left - 10 || noR.left > yesR.right + 10 || noR.bottom < yesR.top - 10 || noR.top > yesR.bottom + 10);
+                    attempts++;
+                } while (isOver && attempts < 30);
+                noBtn.style.position = "absolute"; noBtn.style.marginTop = "0";
+                noBtn.style.left = `${newX}px`; noBtn.style.top = `${newY}px`;
+            });
         });
 
-        // Typing Effect Logic
         function startTyping() {
-            const line1 = "ขอบคุณที่อยู่เคียงข้างกันเสมอมา";
-            const line2 = "คุณคือ Logic ที่สมบูรณ์แบบที่สุดของ MJ เลยนะ";
-            typeText('type-p1', line1, 70, () => {
-                setTimeout(() => {
-                    typeText('type-p2', line2, 70, () => {
-                        document.getElementById('final-cta').classList.remove('opacity-0');
-                    });
-                }, 500);
+            const l1 = "ขอบคุณที่อยู่เคียงข้างกันเสมอมา";
+            const l2 = "คุณคือ Logic ที่สมบูรณ์แบบที่สุดของ MJ เลยนะ";
+            typeText('type-p1', l1, 60, () => {
+                setTimeout(() => { typeText('type-p2', l2, 60, () => {
+                    document.getElementById('final-cta').classList.remove('opacity-0');
+                }); }, 400);
             });
         }
 
-        function typeText(elementId, text, speed, callback) {
-            let i = 0;
-            const element = document.getElementById(elementId);
-            element.classList.add('typing');
-            function type() {
-                if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(type, speed);
-                } else {
-                    element.classList.remove('typing');
-                    if(callback) callback();
-                }
+        function typeText(id, text, speed, cb) {
+            let i = 0; const el = document.getElementById(id);
+            el.classList.add('typing');
+            function t() {
+                if (i < text.length) { el.innerHTML += text.charAt(i); i++; setTimeout(t, speed); }
+                else { el.classList.remove('typing'); if(cb) cb(); }
             }
-            type();
+            t();
         }
 
-        function generateStack(type, count, captions) {
+        function generateStack(type, count, caps) {
             const container = document.getElementById(type === 'random' ? 'stack-random' : 'stack-food');
-            container.innerHTML = ''; let remaining = count;
+            container.innerHTML = ''; let rem = count;
             for(let i = 0; i < count; i++) {
                 const div = document.createElement('div');
                 div.className = 'stacked-photo'; div.style.zIndex = count - i;
                 div.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg) translateY(${i*-1}px)`;
-                div.innerHTML = `<img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/300x400/f8fafc/f43f5e?text=${type}+${i+1}'"><div class="photo-caption">${captions[i]}</div>`;
-                div.onclick = function(e) {
-                    e.stopPropagation(); this.classList.add('photo-out'); remaining--;
-                    if(remaining === 0) {
-                        setTimeout(() => {
-                            if(type === 'random') { transition('section-random', 'section-food', '#f0fdf4'); generateStack('food', 10, foodCaptions); }
-                            else { transition('section-food', 'section-card', '#fff1f2'); }
-                        }, 800);
-                    }
+                div.innerHTML = `<img src="${type}${i+1}.jpg" onerror="this.src='https://via.placeholder.com/200x260/f8fafc/f43f5e?text=${type}+${i+1}'"><div class="photo-caption">${caps[i]}</div>`;
+                div.onclick = function() {
+                    this.classList.add('photo-out'); rem--;
+                    if(rem === 0) setTimeout(() => {
+                        if(type === 'random') { transition('section-random', 'section-food', '#f0fdf4'); generateStack('food', 10, foodCaptions); }
+                        else transition('section-food', 'section-card', '#fff1f2');
+                    }, 600);
                 };
                 container.appendChild(div);
             }
@@ -344,7 +273,7 @@
 
         function finalize() {
             transition('section-card', 'section-finale');
-            const end = Date.now() + 10000;
+            const end = Date.now() + 5000;
             (function frame() {
                 confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.8 } });
                 confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.8 } });
