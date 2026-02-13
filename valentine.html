@@ -68,39 +68,31 @@
             z-index: 50;
         }
 
-        /* Heart Charge Style */
-        .heart-container {
+        /* --- New Heart Charge Style --- */
+        .heart-widget {
             position: relative;
-            width: 120px;
-            height: 120px;
+            width: 150px;
+            height: 150px;
             margin: 0 auto;
             cursor: pointer;
-            user-select: none;
         }
-        .heart-outline {
-            font-size: 100px;
-            color: #e2e8f0;
-            position: absolute;
+        .heart-svg {
             width: 100%;
             height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
         }
-        .heart-fill {
-            font-size: 100px;
-            color: #f43f5e;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            clip-path: inset(100% 0 0 0);
-            transition: clip-path 0.3s ease;
+        .heart-bg { fill: #f1f5f9; } /* สีหัวใจตอนว่างเปล่า */
+        .heart-fill-path { 
+            fill: #f43f5e; 
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .heart-beat { animation: heartScale 0.3s ease; }
-        @keyframes heartScale { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        .heart-beat-anim { animation: heartPunch 0.4s bounce; }
+        @keyframes heartPunch {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+        /* ------------------------------ */
 
         .hidden-section { display: none; }
         .section-fade { animation: fadeIn 0.8s ease-out forwards; }
@@ -123,17 +115,24 @@
         </div>
 
         <div id="section-charge" class="hidden-section section-fade">
-            <h2 class="text-2xl text-slate-800 mb-4 px-4">ก่อนไปเล่นเกมตอบคำถาม logic นี้...</h2>
+            <h2 class="text-2xl text-slate-800 mb-4 px-4 font-bold">ก่อนไปเล่นเกมตอบคำถาม logic นี้...</h2>
             <p class="text-rose-500 font-bold mb-8 uppercase tracking-widest text-sm">ใน 100% รักฉันกี่ %?</p>
             
-            <div class="heart-container mb-6" onclick="chargeHeart()">
-                <div class="heart-outline">❤️</div>
-                <div id="heart-fill" class="heart-fill">❤️</div>
+            <div class="heart-widget mb-6" onclick="chargeHeart()">
+                <svg class="heart-svg" viewBox="0 0 32 32">
+                    <defs>
+                        <clipPath id="heartClip">
+                            <rect id="fillLevel" x="0" y="32" width="32" height="32" />
+                        </clipPath>
+                    </defs>
+                    <path class="heart-bg" d="M16 28.5L14.1 26.6C7.3 20.5 2.8 16.4 2.8 11.4C2.8 7.3 6 4.1 10.1 4.1C12.4 4.1 14.6 5.2 16 7C17.4 5.2 19.6 4.1 21.9 4.1C26 4.1 29.2 7.3 29.2 11.4C29.2 16.4 24.7 20.5 17.9 26.6L16 28.5Z"/>
+                    <path class="heart-fill-path" clip-path="url(#heartClip)" d="M16 28.5L14.1 26.6C7.3 20.5 2.8 16.4 2.8 11.4C2.8 7.3 6 4.1 10.1 4.1C12.4 4.1 14.6 5.2 16 7C17.4 5.2 19.6 4.1 21.9 4.1C26 4.1 29.2 7.3 29.2 11.4C29.2 16.4 24.7 20.5 17.9 26.6L16 28.5Z"/>
+                </svg>
             </div>
             
-            <div id="charge-percent" class="text-3xl font-black text-slate-800 mb-8">0%</div>
+            <div id="charge-percent" class="text-4xl font-black text-slate-300 mb-8 transition-colors">0%</div>
             
-            <button id="charge-next-btn" onclick="goToQuestions()" class="w-full bg-slate-200 text-slate-400 py-4 rounded-xl font-bold uppercase text-sm tracking-widest cursor-not-allowed transition-all" disabled>Access Denied</button>
+            <button id="charge-next-btn" onclick="goToQuestions()" class="w-full bg-slate-200 text-slate-400 py-4 rounded-xl font-bold uppercase text-sm tracking-widest cursor-not-allowed transition-all" disabled>กรุณาเติมความรักให้เต็ม</button>
         </div>
 
         <div id="section-questions" class="hidden-section section-fade">
@@ -192,7 +191,7 @@
         
         let currentStep = 0;
         let yesScale = 1;
-        let heartCharge = 0; // ตัวแปรเก็บค่าเปอร์เซ็นต์หัวใจ
+        let heartCharge = 0;
 
         function createParticles() {
             const container = document.getElementById('particles-bg');
@@ -221,30 +220,34 @@
             } else { alert("Code is 1402"); }
         }
 
-        // Logic สำหรับ Charge Heart
+        // Logic สำหรับ Charge Heart (SVG Version)
         function chargeHeart() {
             if (heartCharge < 100) {
                 heartCharge += 10;
-                const heartFill = document.getElementById('heart-fill');
+                const fillRect = document.getElementById('fillLevel');
                 const chargeText = document.getElementById('charge-percent');
                 const nextBtn = document.getElementById('charge-next-btn');
+                const heartWidget = document.querySelector('.heart-widget');
 
-                // ปรับระดับสีที่เติมในหัวใจ
-                heartFill.style.clipPath = `inset(${100 - heartCharge}% 0 0 0)`;
-                chargeText.innerText = `${heartCharge}%`;
+                // คำนวณตำแหน่ง Y ของ ClipPath (32 คือความสูงเต็มของ viewBox)
+                const newY = 32 - (32 * (heartCharge / 100));
+                fillRect.setAttribute('y', newY);
                 
-                // ใส่เอฟเฟกต์หัวใจเต้น
-                heartFill.parentElement.classList.remove('heart-beat');
-                void heartFill.parentElement.offsetWidth; // trigger reflow
-                heartFill.parentElement.classList.add('heart-beat');
+                chargeText.innerText = `${heartCharge}%`;
+                chargeText.style.color = `rgba(244, 63, 94, ${0.3 + (heartCharge/100)})`;
+
+                // เอฟเฟกต์สั่นเมื่อคลิก
+                heartWidget.classList.remove('heart-beat-anim');
+                void heartWidget.offsetWidth;
+                heartWidget.classList.add('heart-beat-anim');
 
                 if (heartCharge === 100) {
-                    confetti({ particleCount: 40, spread: 70, origin: { y: 0.7 } });
+                    confetti({ particleCount: 50, spread: 80, origin: { y: 0.6 }, colors: ['#f43f5e'] });
                     nextBtn.disabled = false;
-                    nextBtn.innerText = "Access Authorized";
+                    nextBtn.innerText = "Authorize Access";
                     nextBtn.classList.remove('bg-slate-200', 'text-slate-400', 'cursor-not-allowed');
-                    nextBtn.classList.add('bg-rose-500', 'text-white', 'hover:bg-rose-600');
-                    chargeText.classList.add('text-rose-500');
+                    nextBtn.classList.add('bg-slate-900', 'text-white', 'hover:bg-slate-800');
+                    chargeText.classList.add('text-rose-600', 'scale-110');
                 }
             }
         }
