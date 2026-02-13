@@ -2,183 +2,112 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MJ-Lab | The Love Logic</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #fff1f2; touch-action: none; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 1.2s ease; display: flex; align-items: center; justify-content: center; }
-        button { touch-action: manipulation; }
-        .particle { position: absolute; pointer-events: none; animation: floatUp 8s linear infinite; opacity: 0.3; }
-        @keyframes floatUp { 0% { transform: translateY(110vh) rotate(0deg); opacity: 0; } 50% { opacity: 0.6; } 100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; } }
-        .photo-stack { position: relative; width: 240px; height: 320px; margin: 0 auto; z-index: 10; }
-        .stacked-photo { position: absolute; width: 100%; height: 100%; background: white; padding: 10px 10px 50px 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 8px; cursor: pointer; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s; }
-        .stacked-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
-        .photo-caption { position: absolute; bottom: 12px; left: 0; width: 100%; text-align: center; font-size: 11px; font-weight: 700; color: #f43f5e; }
-        .photo-out { transform: translate(160%, -20%) rotate(35deg) scale(0.5) !important; opacity: 0; pointer-events: none; }
-        #btn-area { position: relative; width: 100%; height: 280px; margin-top: 1rem; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        #yes-btn { z-index: 100; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        #no-btn { background-color: #e2e8f0; color: #475569; transition: left 0.3s ease-out, top 0.3s ease-out; position: absolute; z-index: 40; }
-        .heart-widget { width: 120px; height: 120px; margin: 0 auto; cursor: pointer; }
-        .heart-fill-path { fill: #f43f5e; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fff1f2; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
         .hidden-section { display: none; }
-        .section-fade { animation: fadeIn 0.6s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .typing::after { content: '|'; animation: blink 0.7s infinite; color: #f43f5e; }
-        @keyframes blink { 50% { opacity: 0; } }
+        #no-btn { position: absolute; transition: all 0.2s ease; }
     </style>
 </head>
 <body>
-    <audio id="bg-music" loop preload="auto">
-        <source src="https://www.mboxdrive.com/vMUeFBHwzSI.mp3" type="audio/mpeg">
+
+    <audio id="bg-music" loop>
+        <source src="https://docs.google.com/uc?export=download&id=1wKKyf47WttYuWzTNJW255XDmBVuIXK10" type="audio/mpeg">
     </audio>
 
-    <div id="particles-bg"></div>
-    <div id="main-container" class="bg-white/95 backdrop-blur-sm p-8 md:p-12 rounded-[2rem] shadow-2xl max-w-[90%] w-[400px] text-center relative z-50 border border-white">
-        <div id="display-icon" class="text-4xl mb-6">🎁</div>
-
-        <div id="section-decoder" class="section-fade">
-            <h1 class="text-2xl text-slate-800 mb-1 font-bold">System Locked</h1>
-            <p class="text-slate-400 text-[10px] mb-6 font-bold uppercase tracking-widest">ขอรหัส digital door lock xxxxxx</p>
-            <input type="text" id="passcode" placeholder="------" maxlength="6" class="bg-slate-100 border-none rounded-xl px-4 py-3 text-center text-rose-500 text-2xl font-bold tracking-[0.6em] w-full mb-6 focus:ring-2 focus:ring-rose-300">
-            <button onclick="checkCode()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold uppercase text-xs tracking-widest active:scale-95 transition-transform">Authorize</button>
+    <div id="main-card" class="bg-white p-8 rounded-[2rem] shadow-2xl w-[350px] text-center z-50">
+        <div id="step-1">
+            <h1 class="text-2xl font-bold mb-6 text-slate-800">System Locked 🔐</h1>
+            <input type="text" id="passcode" placeholder="ใส่รหัส 6 หลัก" maxlength="6" class="w-full p-3 border-2 border-rose-100 rounded-xl text-center text-2xl font-bold text-rose-500 mb-4 focus:outline-none focus:border-rose-300">
+            <button onclick="startExperience()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 active:scale-95 transition">Authorize & Unlock Sound</button>
+            <p class="mt-4 text-[10px] text-slate-400 uppercase tracking-widest">Digital Door Lock System</p>
         </div>
 
-        <div id="section-charge" class="hidden-section section-fade">
-            <h2 class="text-xl text-slate-800 mb-4 font-bold">how much do you love me today?</h2>
-            <div class="heart-widget mb-6" onclick="chargeHeart()">
-                <svg class="w-full h-full" viewBox="0 0 32 32">
-                    <defs><clipPath id="heartClip"><rect id="fillLevel" x="0" y="32" width="32" height="32" /></clipPath></defs>
-                    <path fill="#f1f5f9" d="M16 28.5L14.1 26.6C7.3 20.5 2.8 16.4 2.8 11.4C2.8 7.3 6 4.1 10.1 4.1C12.4 4.1 14.6 5.2 16 7C17.4 5.2 19.6 4.1 21.9 4.1C26 4.1 29.2 7.3 29.2 11.4C29.2 16.4 24.7 20.5 17.9 26.6L16 28.5Z"/>
-                    <path class="heart-fill-path" clip-path="url(#heartClip)" d="M16 28.5L14.1 26.6C7.3 20.5 2.8 16.4 2.8 11.4C2.8 7.3 6 4.1 10.1 4.1C12.4 4.1 14.6 5.2 16 7C17.4 5.2 19.6 4.1 21.9 4.1C26 4.1 29.2 7.3 29.2 11.4C29.2 16.4 24.7 20.5 17.9 26.6L16 28.5Z"/>
-                </svg>
-            </div>
-            <div id="charge-percent" class="text-3xl font-black text-slate-300 mb-6">0%</div>
-            <button id="charge-next-btn" onclick="goToQuestions()" class="w-full bg-slate-200 text-slate-400 py-3 rounded-xl font-bold uppercase text-xs disabled:cursor-not-allowed" disabled>เติมสีให้เต็มหัวใจ</button>
-        </div>
-
-        <div id="section-questions" class="hidden-section section-fade">
-            <p id="status-msg" class="text-[9px] text-rose-500 font-bold mb-4 uppercase tracking-tighter"></p>
-            <h2 id="question-text" class="text-xl text-slate-700 min-h-[4rem] flex items-center justify-center font-bold px-2"></h2>
-            <div id="btn-area">
-                <button id="yes-btn" onclick="handleYes()" class="bg-rose-500 text-white px-8 py-3 rounded-full text-lg shadow-lg hover:bg-rose-600 active:scale-90 transition-all font-bold">YES</button>
-                <button id="no-btn" class="px-6 py-2 rounded-full text-sm">NO</button>
+        <div id="step-2" class="hidden-section">
+            <h2 id="question-text" class="text-xl font-bold text-slate-700 mb-12 min-h-[60px]">พี่จะรักหนูคนเดียวตลอดไปไหม? ❤️</h2>
+            <div class="relative h-[150px] flex flex-col items-center">
+                <button id="yes-btn" onclick="nextQuestion()" class="bg-rose-500 text-white px-10 py-3 rounded-full font-bold shadow-lg transition-transform">YES</button>
+                <button id="no-btn" class="bg-slate-200 text-slate-500 px-6 py-2 rounded-full text-sm mt-8">NO</button>
             </div>
         </div>
 
-        <div id="section-random" class="hidden-section section-fade"><h2 class="text-xl mb-6 font-bold">Everywhere with you is my favorite place</h2><div id="stack-random" class="photo-stack"></div></div>
-        <div id="section-food" class="hidden-section section-fade"><h2 class="text-xl mb-6 font-bold">1% food and 99% of my love</h2><div id="stack-food" class="photo-stack"></div></div>
-
-        <div id="section-card" class="hidden-section section-fade">
-            <div class="text-rose-500 text-3xl mb-4">💌</div>
-            <h3 class="text-2xl text-slate-800 mb-6 font-bold">Hi, favorite person.</h3>
-            <div id="typing-container" class="space-y-3 text-slate-600 text-[15px] font-medium italic leading-relaxed text-left">
-                <p id="type-p1"></p><p id="type-p2"></p><p id="type-p3"></p>
-            </div>
-            <button id="final-cta" onclick="finalize()" class="mt-8 bg-rose-500 text-white px-10 py-3 rounded-full font-bold shadow-xl opacity-0 transition-opacity">THE END ❤️</button>
-        </div>
-
-        <div id="section-finale" class="hidden-section section-fade">
-            <h1 class="text-3xl text-rose-600 mb-2 font-bold">COMPLETE!</h1>
-            <p class="text-slate-400 font-bold tracking-[0.2em] text-[10px] uppercase">Happy Valentine's Day</p>
+        <div id="step-3" class="hidden-section">
+            <div class="text-5xl mb-4">💌</div>
+            <h2 class="text-2xl font-bold text-rose-500 mb-4">Mission Complete!</h2>
+            <p class="text-slate-600 italic">"ขอบคุณที่ทำตาม Love Logic ของหนูนะคะ รักพี่ที่สุดเลย!"</p>
+            <button onclick="location.reload()" class="mt-8 text-slate-300 text-xs underline">เริ่มใหม่</button>
         </div>
     </div>
 
     <script>
         const music = document.getElementById('bg-music');
-        let currentStep = 0; let yesScale = 1; let heartCharge = 0;
+        let currentQ = 0;
+        let yesScale = 1;
+        const questions = [
+            "พี่จะรักหนูคนเดียวตลอดไปไหม? ❤️",
+            "พี่จะพาหนูไปกินของอร่อยบ่อยๆ ใช่ไหม? 🍱",
+            "พี่จะเป็นเด็กดีของหนูตลอดไปรึเปล่า? 😇"
+        ];
 
-        function checkCode() {
-            if (document.getElementById('passcode').value === '35250*') {
-                music.play(); // เริ่มเล่นทันทีที่ปลดล็อก
-                transition('section-decoder', 'section-charge');
-            } else { alert("Incorrect Passcode!"); }
-        }
-
-        function transition(from, to, bgColor) {
-            document.getElementById(from).classList.add('hidden-section');
-            document.getElementById(to).classList.remove('hidden-section');
-            if(bgColor) document.body.style.backgroundColor = bgColor;
-            if(to === 'section-card') startTyping();
-        }
-
-        function chargeHeart() {
-            if (heartCharge < 100) {
-                heartCharge += 10;
-                document.getElementById('fillLevel').setAttribute('y', 32 - (32 * (heartCharge / 100)));
-                document.getElementById('charge-percent').innerText = `${heartCharge}%`;
-                if (heartCharge === 100) {
-                    confetti({ particleCount: 40, spread: 70, origin: { y: 0.7 } });
-                    const nb = document.getElementById('charge-next-btn');
-                    nb.disabled = false; nb.innerText = "Authorize Access";
-                    nb.classList.remove('bg-slate-200', 'text-slate-400');
-                    nb.classList.add('bg-slate-900', 'text-white');
-                }
-            }
-        }
-
-        function goToQuestions() { transition('section-charge', 'section-questions'); updateQuestion(); }
-        
-        function updateQuestion() {
-            const questions = ["พี่จะตามใจหนูทุกอย่างรึป่าว? ✨", "พี่จะคิดถึงหนูเยอะๆตลอดเวลาไหม? 💭", "พี่จะบอกง่ายและเชื่อฟังใช่ไหมคะ? 😇", "พี่จะพาไปเที่ยวเยอะๆๆเลยนะ? 🗺️", "พี่จะพาไปแมคโครบ่อยๆด้วยค่ะ? 🛒", "พี่จะอยากกินทุกอย่างที่หนูทำให้กินไหม? 🍳", "พี่จะไม่ลืมกอดๆหนูตอนเช้าเย็นก่อนนอน? 🫂", "พี่จะรักๆหนูเยอะๆๆทุกวันตลอดเวลาเลย? ❤️"];
-            if (currentStep < questions.length) {
-                document.getElementById('status-msg').innerText = `Sequence ${currentStep + 1} of 8`;
-                document.getElementById('question-text').innerText = questions[currentStep];
-                resetButtons();
+        function startExperience() {
+            const code = document.getElementById('passcode').value;
+            if (code === '35250*') {
+                // เคล็ดลับ: ต้องสั่ง play() ทันทีที่ผู้ใช้คลิกปุ่มนี้ Browser ถึงจะยอมให้เสียงดัง
+                music.play().catch(err => {
+                    alert("กรุณากดที่หน้าจอหนึ่งครั้งเพื่อให้เพลงเริ่มเล่นนะคะ");
+                    console.error("Playback failed:", err);
+                });
+                
+                document.getElementById('step-1').classList.add('hidden-section');
+                document.getElementById('step-2').classList.remove('hidden-section');
             } else {
-                transition('section-questions', 'section-random', '#fafaf9');
-                generateStack('random', 10);
+                alert("รหัสผิดนะคะ ลองใหม่อีกทีนะ!");
             }
         }
 
-        function handleYes() { confetti({ particleCount: 20, spread: 50, origin: { y: 0.8 } }); currentStep++; updateQuestion(); }
-        function resetButtons() { yesScale = 1; document.getElementById('yes-btn').style.transform = `scale(1)`; document.getElementById('no-btn').style.position = "static"; document.getElementById('no-btn').style.marginTop = "20px"; }
+        function nextQuestion() {
+            confetti({ particleCount: 50, spread: 60 });
+            currentQ++;
+            if (currentQ < questions.length) {
+                document.getElementById('question-text').innerText = questions[currentQ];
+                // รีเซ็ตปุ่ม YES
+                yesScale = 1;
+                document.getElementById('yes-btn').style.transform = `scale(1)`;
+            } else {
+                document.getElementById('step-2').classList.add('hidden-section');
+                document.getElementById('step-3').classList.remove('hidden-section');
+                confetti({ particleCount: 150, spread: 100 });
+            }
+        }
 
-        // Logic สำหรับปุ่ม NO ที่หนีไปเรื่อยๆ
-        document.getElementById('no-btn').addEventListener('mouseover', function() {
-            yesScale += 0.2; document.getElementById('yes-btn').style.transform = `scale(${yesScale})`;
+        // ทำให้ปุ่ม NO หนีไปเรื่อยๆ
+        const noBtn = document.getElementById('no-btn');
+        noBtn.addEventListener('mouseover', () => {
+            // ขยายปุ่ม YES ให้กดง่ายขึ้น
+            yesScale += 0.4;
+            document.getElementById('yes-btn').style.transform = `scale(${yesScale})`;
+            
+            // ย้ายปุ่ม NO
             const x = Math.random() * (window.innerWidth - 100);
             const y = Math.random() * (window.innerHeight - 50);
-            this.style.position = "absolute"; this.style.left = x + 'px'; this.style.top = y + 'px';
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
         });
-
-        function generateStack(type, count) {
-            const container = document.getElementById(type === 'random' ? 'stack-random' : 'stack-food');
-            let rem = count;
-            for(let i=1; i<=count; i++) {
-                const div = document.createElement('div');
-                div.className = 'stacked-photo'; div.style.zIndex = count - i;
-                div.innerHTML = `<img src="${type}${i}.jpg" onerror="this.src='https://via.placeholder.com/200x260?text=Photo+${i}'">`;
-                div.onclick = function() {
-                    this.classList.add('photo-out'); rem--;
-                    if(rem === 0) setTimeout(() => {
-                        if(type === 'random') { transition('section-random', 'section-food', '#f0fdf4'); generateStack('food', 10); }
-                        else transition('section-food', 'section-card', '#fff1f2');
-                    }, 600);
-                };
-                container.appendChild(div);
-            }
-        }
-
-        function startTyping() {
-            const lines = ["เย้ ขอให้พี่มีแต่วันที่ดีๆ ทุกวันนะคะ ✨ ขอบคุณที่ทำให้มีความสุขทุกวันๆเลยนะคะ 💖", "แล้วก็ให้หนูทำกับข้าวให้กินเยอะๆเลยค่ะ 🍳 ขอให้สุขภาพแข็งแรง ท้องอืดน้อยลงด้วยนะคะ ✌️", "ขอบคุณที่เข้าใจ love logic แบบนี้ และขอให้ทำความเข้าใจไปเรื่อยๆนะคะ 🥰"];
-            typeText('type-p1', lines[0], 50, () => {
-                typeText('type-p2', lines[1], 50, () => {
-                    typeText('type-p3', lines[2], 50, () => { document.getElementById('final-cta').classList.remove('opacity-0'); });
-                });
-            });
-        }
-
-        function typeText(id, text, speed, cb) {
-            let i = 0; const el = document.getElementById(id); el.classList.add('typing');
-            function t() { if(i < text.length) { el.innerHTML += text.charAt(i); i++; setTimeout(t, speed); } else { el.classList.remove('typing'); if(cb) cb(); } }
-            t();
-        }
-
-        function finalize() { transition('section-card', 'section-finale'); confetti({ particleCount: 200, spread: 100 }); }
+        
+        // สำหรับมือถือ (แตะแล้วหนี)
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            yesScale += 0.4;
+            document.getElementById('yes-btn').style.transform = `scale(${yesScale})`;
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 50);
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+        });
     </script>
 </body>
 </html>
